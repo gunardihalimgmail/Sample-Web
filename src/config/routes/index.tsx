@@ -96,7 +96,14 @@ const Route_custom = () => (
                   </Route>
 
                   {/* <Route path = "/" element={<Main />} /> */}
-                  <Route path = "/" element={<Navigate to="/transaksi/penjualan" />} />
+
+                  {/* * Jika ada hash maka pakai yang terakhir setelah hash (kondisi github pages yang hanya support '#') */}
+                  {/* Contoh output hash -> '#/list/users' */}
+                  <Route path = "/" element={<Navigate to={window.location.hash.replace('#','') || "/transaksi/penjualan"} />} />
+                  {/* <Route path = "/" element={<Navigate to={"/transaksi/penjualan"} />} /> */}
+
+                  {/* Jika URL salah atau tidak ada */}
+                  <Route path = "/*" element={<Navigate to={"/transaksi/penjualan"} />} /> 
 
                   {/* <Route path = "/" element={<Navigate to="/login" />}> */}
                         {/* <Route index element = {<Navigate to = "/dashboard" />} /> */}

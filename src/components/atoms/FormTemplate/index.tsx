@@ -497,7 +497,9 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
       themeLink = document.createElement("link");
       themeLink.id = "theme-link";
       themeLink.rel = "stylesheet";
-      themeLink.href = `/resources/themes/lara-light-amber/theme.css`;
+      // Sample-Web -> dari BrowserRouter basename
+      // href -> mengarah ke folder public
+      themeLink.href = `/Sample-Web/resources/themes/lara-light-amber/theme.css`;
       document.head.appendChild(themeLink);
     }
 

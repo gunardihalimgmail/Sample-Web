@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createStoreHook } from 'react-redux';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom';
 import './index.css';
 import App from './pages/App';
 import reportWebVitals from './reportWebVitals';
@@ -60,7 +60,8 @@ root.render(
   // <React.StrictMode>  
       <Provider store={storeMenu}>
         <PrimeReactProvider value={{ripple:true}}>
-            <BrowserRouter>
+            {/* <HashRouter> */}
+            <BrowserRouter basename='/Sample-Web'>
               <GoogleOAuthProvider clientId="994442954425-snhnca7f4itjpp9d12lribd7gcatrfes.apps.googleusercontent.com">
 
                 <Auth0Provider 
@@ -74,6 +75,7 @@ root.render(
 
               </GoogleOAuthProvider>
             </BrowserRouter>
+            {/* </HashRouter> */}
         </PrimeReactProvider>
       </Provider>
   // </React.StrictMode>
