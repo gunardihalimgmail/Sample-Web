@@ -15,8 +15,10 @@
       (function(){
         var path = window.location.pathname;
         var base = '/Sample-Web';
+        console.log('Sebelum Replace : ', path);
+        console.log('Setelah Replace : ', base + '/#' + path.replace(base,''));
 
-        window.location.replace(base + '/#' + path.replace(base, ''));
+        // window.location.replace(base + '/#' + path.replace(base, ''));
       })()
     </script>
 
