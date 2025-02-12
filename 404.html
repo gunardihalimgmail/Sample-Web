@@ -4,15 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redirecting...</title>
-  <script>
-    (function(){
-      var path = window.location.pathname;
-      document.getElementById('sample').innerHTML = path;
-    })
-  </script>
+    <!-- <script>
+      window.addEventListener('DOMContentLoaded', function(){
+        var path = window.location.pathname;
+        document.getElementById('sample').innerHTML = path;
+      })
+    </script> -->
+
+    <script>
+      (function(){
+        var path = window.location.pathname;
+        var base = '/Sample-Web';
+
+        window.location.replace(base + '/#' + path.replace(base, ''));
+      })()
+    </script>
+
 </head>
 <body>
-    <h1>Halo Semua 404...</h1>
+    <h1>Redirect 404...</h1>
+
     <h2 id="sample"></h2>
+
+    <!-- * harus taruh di dalam body jika mau parsing id element, jika tetap di head maka pakai event 'DOMContentLoaded' tunggu semua element di load -->
+    <!-- <script>
+      (function(){
+        var path = window.location.pathname;
+        document.getElementById('sample').innerHTML = path;
+      })()
+    </script> -->
 </body>
 </html>
