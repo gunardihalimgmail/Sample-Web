@@ -14,11 +14,11 @@
     <script>
       (function(){
         var path = window.location.pathname;
-        var base = '/Sample-Web';
+        var base = '/Sample-Web'; // repository name (github page)
         console.log('Sebelum Replace : ', path);
         console.log('Setelah Replace : ', base + '/#' + path.replace(base,''));
 
-        // window.location.replace(base + '/#' + path.replace(base, ''));
+        window.location.replace(base + '/#' + path.replace(base, ''));
       })()
     </script>
 
