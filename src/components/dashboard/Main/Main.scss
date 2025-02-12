@@ -1,0 +1,488 @@
+.ppe-card-dash-top {
+
+  &::-webkit-scrollbar{
+    height:7px;
+    // background-color: grey;
+  }
+  &::-webkit-scrollbar-track{
+    background-color: rgba(228, 225, 225, 0.595);
+    
+  }
+  &::-webkit-scrollbar-thumb{
+    border-radius: 25px;
+    // background-color: rgb(255, 183, 129);
+    background: linear-gradient(to right, rgb(154, 192, 225), rgb(153, 225, 188),rgb(154, 225, 153));
+  }
+  
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+
+  &.isDragging {
+    cursor: grabbing;
+  }
+
+  border:none;
+  display: flex;
+  flex-direction: row;
+  gap:15px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: 10px;
+  padding-left:5px;
+  padding-right:5px;
+
+  .ppe-card-dash-top-sub {
+    
+      display:flex;
+      flex:1;
+
+      .ppe-card-dash-main {
+
+          // index card color
+          &.ppe-card-idx-0 {
+              .card-body {background: linear-gradient(to right,#fe9365,#feb798);}
+              .card-footer {background: linear-gradient(to right,#fb8a5a,#feb798);}
+          }
+          &.ppe-card-idx-1 {
+              .card-body {background: linear-gradient(to right, #0ac282, #0df3a3);}
+              .card-footer {background: linear-gradient(to right, #24c18a, #0df3a3);}
+          }
+          &.ppe-card-idx-2 {
+              .card-body {background: linear-gradient(to right, #fe5d70, #fe909d);}
+              .card-footer {background: linear-gradient(to right, #ff5064, #fe909d);}
+          }
+          &.ppe-card-idx-3 {
+              .card-body {background: linear-gradient(to right, #01a9ac, #01dbdf);}
+              .card-footer {background: linear-gradient(to right, #00b1b4, #01dbdf);}
+          }
+          &.ppe-card-idx-4 {
+              .card-body {background: linear-gradient(to right, #79c10e, #93e813);}
+              .card-footer {background: linear-gradient(to right, #7ab422, #93e813);}
+          }
+          &.ppe-card-idx-5 {
+              .card-body {background: linear-gradient(to right, #9755ae, #cb86f3);}
+              .card-footer {background: linear-gradient(to right, #8f54a4, #cb86f3);}
+          }
+          &.ppe-card-idx-6 {
+              .card-body {background: linear-gradient(to right, #5557ae, #6d6ead);}
+              .card-footer {background: linear-gradient(to right, #5456a3, #6d6ead);}
+          }
+          &.ppe-card-idx-7 {
+              .card-body {background: linear-gradient(to right, #559bae, #79bdd0);}
+              .card-footer {background: linear-gradient(to right, #68a6b8, #79bdd0);}
+          }
+          &.ppe-card-idx-8 {
+              .card-body {background: linear-gradient(to right, #bb7b67, #ca907e);}
+              .card-footer {background: linear-gradient(to right, #c18674, #ca907e);}
+          }
+          
+        
+          overflow-x: hidden;
+      
+          &.card {
+            flex:1;
+            border:none;
+            background-color: transparent;
+            // scroll-snap-align: center;
+            width:350px;
+          }
+        
+          .card-body {
+            border-radius:10px 10px 0 0;
+            padding-bottom:0.5rem;
+            
+            .ppe-card-dash-tools {
+              color:white;
+              font-family: monospace;
+
+              .ppe-card-dash-subtools-subject {
+                font-weight: 500;
+                // text-shadow: 1px 1px 3px rgb(164, 40, 67);
+                font-family: FF_Din_Font;    // di import dari sideMenu
+                font-size:17px;
+
+                line-height: normal;
+                // width:100px;
+                // border: 1px solid red;
+              }
+
+
+              .ppe-card-dash-subtools-number {
+                font-weight: 700;
+                position: relative;
+                top:-5px;
+                font-family: FF_Din_Font;
+                font-size: 1.2rem;
+              }
+            }
+          }
+
+          .card-footer{
+            color:white;
+            
+            border-top-color: #f9dccf;
+            // font-size: 14px;
+            border-radius:0 0 10px 10px !important;
+            
+
+            .ppe-card-footer-datetime,
+            .ppe-card-footer-cam {
+                font-style: italic;
+                font-size: 12px;
+                font-weight: 400;
+            }
+          }
+
+          .ppe-card-dash-idcamera {
+              opacity:0.8; 
+              color:rgb(255, 246, 246);
+              text-shadow: 2px 1px 5px chocolate;
+              font-weight:700;
+              position:absolute;
+              font-size:40px;
+              // left:-5px;
+              // top:-20px;
+              right:10px;
+              top:-10px;
+              z-index: 1;
+              cursor: pointer;
+              pointer-events: none;
+              transition: all 0.3s ease-in-out;
+              font-family:FF_Din_Font_Medium;
+          }
+
+          .ppe-card-dash-idcamera-info {
+            position: relative;
+            // right:10px;
+            // top:60px;
+            z-index:1;
+            font-style: italic;
+            font-family: FF_Din_Font_Medium;
+            font-size: 14px;
+            font-weight: 200;
+            color:white;
+            padding-inline: 5px;
+            border-radius: 20px;
+            cursor: pointer !important;
+            transition:all 0.3s ease;
+            transform-origin: right;
+            text-align: right;
+            width:35px;
+            // background-color: #01a9ac;
+            
+            &:hover{
+              background-color: #5456a3;
+              box-shadow: 1px 1px 9px 1px white;
+              width:50px; 
+            }
+          }
+          
+          .ppe-card-dash-iconcamera {
+              flex:1;
+              opacity:0.3;
+              position:absolute;
+
+              // top:-60px;
+              // right:-50px;
+              top:-40px;
+              right:-20px;
+
+              z-index: 0;
+              // transform: scale(0.6) rotateZ(40deg);
+              transform: scale(1.2) rotateZ(40deg);
+
+              transition: all 0.3s ease-in-out;
+              
+          }
+      }
+
+      &:hover {
+        .ppe-card-dash-main {
+          .ppe-card-dash-idcamera {
+              font-size: 60px;
+              top:-20px;
+              opacity: 1;
+              text-shadow: 3px 1px 8px rgb(186, 64, 64);
+              // -webkit-text-stroke: 1px rgb(114, 172, 179);
+          }
+
+          .ppe-card-dash-iconcamera {
+            top:-45px !important;
+            right:-20px !important;
+            transform: scale(1.7) rotateZ(20deg) !important; 
+          }
+        }
+      }
+
+  }
+
+}
+
+
+// Card List Group
+
+.ppe-dash-main-blok2 {
+    border:1px solid transparent;
+    margin-left:5px !important;
+    margin-right: 5px !important;
+    
+
+    .ppe-card-list-group {
+        box-shadow: 0 4px 6px 1px rgb(46,38,61,0.1);
+        padding:0;
+
+        height:500px;
+        overflow-x:auto;
+        // overflow-y:auto;
+
+        &::-webkit-scrollbar{
+          width:8px;
+          height:8px;
+          // background-color: grey;
+        }
+        &::-webkit-scrollbar-track{
+          // background-color: rgba(228, 225, 225, 0.495);
+          background-color: rgba(96, 196, 227, 0.256);
+          
+        }
+        &::-webkit-scrollbar-thumb{
+          border-radius: 25px;
+          // background-color: rgb(255, 183, 129);
+          background: linear-gradient(to right, rgba(61, 171, 161, 0.436), rgba(72, 187, 207, 0.852));
+        }
+
+        &.card {
+            font-family: FF_Din_Font;
+
+            
+            &.ppe-card-list-group-fullblock {
+              cursor:grab;
+              user-select: none;
+              -moz-user-select: none;
+              -webkit-user-select: none;
+            }
+    
+            .card-header {
+                background-color: transparent;
+                color:#01a9ac;
+                font-weight: 600;
+                padding: 1rem;
+                border-bottom: 1px solid lightblue;
+                margin-left: 16px;
+                margin-right: 16px;
+            }
+    
+            .card-body {
+
+                border:1px solid transparent;
+                margin-left:15px;
+
+                .ppe-card-list-group-title {
+                  font-family: FF_Din_Font_medium;
+                  color: rgba(46, 38 ,61, 0.9);
+                  font-size: 1rem;
+                }
+                .ppe-card-list-group-subtitle {
+                  font-family: FF_Din_Font;
+                  font-size: 0.8125rem;
+                  font-weight: 400;
+                  color:rgba(46, 38, 61,0.8);
+                  line-height: 1.5;
+                }
+
+                .ppe-card-list-side-left {
+                  cursor:pointer; 
+                  pointer-events: none;
+                }
+
+                .ppe-card-list-side-right {
+                    .ppe-card-list-side-right-value{
+                        font-weight: 600; 
+                        font-size: 1.2rem;
+                        color:blueviolet;
+                    }
+
+                    .ppe-card-list-side-right-percent-up {
+                        background-color: rgba(86, 202, 0,0.16);
+                        color:#56CA00;
+                        // padding-left:5px;
+                        // padding-right:5px;
+                        height: 24px;
+                        font-size: 0.7125rem;
+                        font-weight: 700;
+                        line-height: 1.53846;
+                        border-radius: 10px;
+
+                        .percent-up-number {
+                          padding-inline: 0.55rem;
+                        }
+                    }
+
+                    .ppe-card-list-side-right-percent-down {
+                        background-color: rgba(255, 76, 81, 0.16);
+                        color:#ff4c51;
+                        // padding-left:5px;
+                        // padding-right:5px;
+                        height: 24px;
+                        font-size: 0.7125rem;
+                        font-weight: 700;
+                        line-height: 1.53846;
+                        border-radius: 10px;
+
+                        .percent-up-number {
+                          padding-inline: 0.55rem;
+                        }
+                    }
+
+                    .ppe-card-list-side-right-icon-badge {
+                        font-size:24px;
+                        font-weight:700;
+                        svg{
+                          font-size:17px;
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+    
+
+}
+
+.ppe-card-dash-info-image {
+  // border:1px solid red;
+  position: relative;
+  padding-block: 20px;
+  padding-inline: 20px;
+  border-radius: 15px;
+  box-shadow: 1px 1px 9px 3px rgb(224, 224, 224);
+
+  margin-bottom:50px;
+
+  .ppe-card-dash-info-image-title {
+      .ppe-img-gallery-back {
+          border-radius:30px; 
+          background-color:darkcyan;
+          
+          &:hover {
+            cursor:pointer;
+            background-color:rgb(0, 83, 83);
+          }
+      }
+  }
+
+  .ppe-random-img-container {
+
+      overflow: hidden;
+      position: relative;
+      transition: all 0.9s ease;
+      height:200px; // height image
+
+      &:hover{
+        .ppe-random-img-banner {
+          visibility: visible;
+          opacity: 1;
+        }
+      }
+
+      .ppe-random-img-banner{
+        transition: all 0.5s ease;
+        position: absolute;
+        visibility: hidden;
+        opacity: 0;
+        width: 100%;
+        height:30px;
+        background-color: rgba(200, 72, 65, 0.621);
+        color:white;
+        padding-inline: 10px;
+        font-size: 12px;
+        font-family: FF_Din_Font;
+        font-style: italic;
+
+        .ppe-random-img-detail-text {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            cursor: pointer;
+
+            &:hover{
+              text-decoration: underline;
+            }
+        }
+      }
+
+  }
+
+  .ppe-card-dash-info-image-title {
+      position: relative;
+
+      div{
+        font-size: 2.5rem;
+        font-family: FF_Din_Font_Bold;
+        color:navy;
+        // background-color: darkcyan;
+        // font-weight: bolder;
+      }
+      .image-glare {
+        position: absolute;
+        left:-20px;
+        top:7px;
+        width:50px;
+        height:50px;
+        animation:  rotate-glare 2.5s infinite;
+
+        // background-color: grey;
+      }
+
+      @keyframes rotate-glare {
+          0%{
+            transform: scale(0.2,0.2) rotate(0deg);
+          }
+          50%{
+            transform: scale(0.9,0.9) rotate(180deg);
+          }
+          100%{
+            transform: scale(0.2,0.2) rotate(360deg);
+          }
+      }
+  }
+
+  .info-image {
+    // border:1px solid red;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+}
+
+
+@media (max-width:767px){
+  .ppe-card-dash-top {
+    flex-direction: column;
+  } 
+
+  .ppe-card-list-side-right {
+    .ppe-card-list-side-right-value{  // bukan percent
+        font-weight: 600; 
+        font-size: 0.9rem !important;
+    }
+
+    .ppe-card-list-side-right-percent-down {
+        height: 17px !important;
+    }
+    .ppe-card-list-side-right-percent-up {
+        height: 17px !important;
+    }
+
+    .ppe-card-list-side-right-icon-badge {
+        font-size:17px;
+
+        svg{
+          font-size:17px;
+        }
+
+    }
+  }
+}

@@ -1,0 +1,20 @@
+// hide copyright di kotak bawah
+.maplibregl-ctrl-bottom-right.mapboxgl-ctrl-bottom-right {
+    display:none;
+}
+
+.map-back-link {
+    position:absolute;
+    top:10px;
+    left:10px;
+    color: white;
+    z-index:9;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+
+    &:hover {
+        text-shadow: 3px 3px 7px darkorange;
+    }
+}

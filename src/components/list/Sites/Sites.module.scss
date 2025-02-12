@@ -1,0 +1,35 @@
+// .MuiSvgIcon-root {
+  // fill:darkolivegreen !important;
+// }
+
+.ppe-icon-actions {
+  background-color: transparent;
+  border-radius:50%;
+  padding:3px;
+  cursor:pointer;
+  transition: all .3;
+
+  &.edit {
+    &:hover {
+      background-color: navy;
+      box-shadow: 1px 1px 2px 1px grey;
+
+      svg {
+        fill: white !important;
+      }
+
+    }
+  }
+
+  &.delete {
+    &:hover {
+      background-color: rgb(233, 17, 17);
+      box-shadow: 1px 1px 2px 1px grey;
+
+      svg {
+        fill: white !important;
+      }
+
+    }
+  }
+}

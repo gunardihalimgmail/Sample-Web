@@ -1,0 +1,38 @@
+@font-face {
+  font-family: 'AmericanKestral1';
+  font-weight: 900;
+  src: url(../src/fonts/americankestral1_2.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'datalatin';
+  font-weight: 900;
+  src: url(../src/fonts/Aadhunik.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-weight: lighter;
+  src: url(../src/fonts/Montserrat-Regular.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-weight: bold;
+  src: url(../src/fonts/Montserrat-Bold.ttf) format('truetype');
+}
+/* @font-face {
+  font-family: 'airstrikeacad';
+  src: url(../src/fonts/airstrikeacad.ttf) format('truetype');
+} */
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

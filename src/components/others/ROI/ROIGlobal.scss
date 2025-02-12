@@ -1,0 +1,268 @@
+
+.ppe-anly-datepicker {
+  // margin-left:15px;
+  margin-left:0;  // label periode di hilangkan
+  margin-bottom:15px;
+
+  .recordings-strip-between-date {
+      display: flex;
+  }
+
+  @media (max-width:767px) {
+    .recordings-strip-between-date {
+        display: none !important;
+    }
+  }
+
+  .react-datepicker-popper {
+    z-index: 3;
+  }
+
+  .ppe-anly-datepicker-title {
+    font-family: FF_Din_Font_Medium; 
+    color: rgb(91, 111, 167);
+  }
+
+  .ppe-anly-datepicker-container {
+    position: relative;
+    .ppe-anly-datepicker-icon {
+        position:absolute;
+        z-index:4;
+        margin-left:5px;
+        top: 50%;
+        transform: translateY(-50%);
+
+    }
+  }
+
+  input {
+    border: 1px solid #aeaeae;
+    border-radius: 4px;
+    box-shadow: inset 0 2px 2px #e9e9e9;
+    font-size: 15px;
+    line-height: 19px;
+    padding: 6px 10px 6px 35px;
+
+    &:focus {
+      // border: #aeaeae;
+      box-shadow: inset 0 2px 2px #e9e9e9,0 0 10px 0 rgba(73,107,125,.3);
+      outline: none;
+    }
+  }
+}
+
+
+.ppe-anly-datepicker-parent {
+  width: 100%;
+
+  .react-datepicker__input-container {
+    display: flex;
+    height:100%;
+
+    .react-datepicker-ignore-onclickoutside {
+      width: 100%;
+    }
+
+    input[type="text"] {
+      width: 190px;
+    }
+
+    @media (max-width:767px) {
+      input[type="text"] {
+        width: 100%;
+      } 
+    }
+
+  }
+}
+
+
+.roi-custom-selectbutton-group {
+  .p-button {
+    border-radius: revert-layer !important;
+    padding-inline:15px !important;
+    padding-block: 5px !important;
+  }
+}
+
+.roi-custom-prime-msg {
+    .p-message {
+      .p-message-wrapper {
+        position: relative;
+
+        .p-message-close {
+          position: absolute;
+          right: 20px;
+
+        }
+      }
+    }
+}
+
+// ** clear button safe, danger, all
+.roi-custom-clear {
+  .custom-prime-safe {
+      width: 40px;
+      height: 40px;
+      &.p-button-rounded {
+          border-radius: 50% !important;
+      }
+  }
+  .custom-prime-danger {
+      width: 40px;
+      height: 40px;
+      &.p-button-rounded {
+          border-radius: 50% !important;
+      }
+  }
+}
+
+.p-button.p-component {
+
+  &:not(.p-highlight) .roi-color-area-text-safe, .roi-color-area-text-danger {
+    font-family: "Inter var", sans-serif;
+    font-weight: 500;
+    // color:rgb(0, 184, 28);
+    // text-shadow: 1px 1px 1px lightgreen;
+  }
+  
+  // &.p-highlight {
+  //     .roi-color-area-text-safe {
+        // font-family: FF_Din_Font_Medium;
+        // font-weight: 600;
+        // color: white;
+        // text-shadow: 1px 1px 1px green;
+  //     }
+  // }
+}
+
+.roi-fieldset-container {
+
+    padding-bottom:70px;
+
+  .prime-custom-fieldset {
+      border:1px solid #dee2e6;
+      position: relative;
+      top: 50px;
+
+      .p-fieldset-legend {
+          background-color: #f0ffed !important;
+        .p-fieldset-legend-text {
+            font-size: 1.2rem;
+            // color:green;
+            font-family:  Arial;
+        }
+      }
+
+      // ** isi content fieldset
+      .p-toggleable-content {
+        word-break: break-word;
+        font-size: 0.9rem !important;
+      }
+
+      // .p-fieldset-content {
+      //     background-color: #e2fddc;
+      // }
+  
+      legend.p-fieldset-legend {
+        position: absolute;
+        padding: 0.7rem;
+        // background-color: #f8f9fa;
+        border:1px solid #dee2e6;
+        border-radius: 6px;
+        font-weight: 700;
+        top: -25px;
+        left: 30px;
+        width: auto;
+      }
+  }
+}
+
+// ** Pewarnaan Fieldset
+.roi-fieldset-container{
+    &.fieldset-safe {
+      .p-fieldset-legend {
+          background-color: #f0ffed !important;
+        .p-fieldset-legend-text {
+            color:green;
+        }
+      }
+      .p-fieldset-content {
+          background-color: #eafde6;
+          padding-inline: 1rem;
+          padding-bottom: 5px;
+      }
+
+      legend.p-fieldset-legend {
+          background-color: #f8f9fa;
+      }
+
+    }
+
+    &.fieldset-danger {
+
+      .p-fieldset-legend {
+          background-color: #ffeded !important;
+        .p-fieldset-legend-text {
+            color:rgb(128, 0, 0);
+        }
+      }
+      .p-fieldset-content {
+          background-color: #ffebeb;
+          padding-inline: 1rem;
+          padding-bottom: 5px;
+      }
+
+      legend.p-fieldset-legend {
+          background-color: #faf8f8;
+      }
+
+    }
+
+    @media (max-width:767px) {
+      &.fieldset-danger {
+        position: relative;
+          top:-40px;
+      }
+    }
+
+}
+
+
+// Style Button PrimeReact
+.p-button {
+  border-radius: 6px !important;
+  // padding: 0.25rem 0.75rem;
+
+  .p-button-label {
+    font-weight: 700;
+    font-family: Inter Var, FF_Din_Font;
+  }
+
+  // size button
+  &.custom-prime-size-small {
+    font-size: 0.875rem !important;
+    padding:0.35625rem 0.79375rem !important;
+    // padding:0.35625rem 0.79375rem !important;
+  }
+
+  &.custom-prime-size-medium {
+    font-size: 1rem !important;
+    padding:0.45rem 1.25rem !important;
+  }
+
+  &.custom-prime-size-normal {
+    font-size: 1rem !important;
+    padding:0.75rem 1.25rem !important;
+  }
+
+}
+// ... ** button prime react
+
+
+// ** Posisi Image List Item Bar
+// .roi-custom-img-list-itembar {
+//     &.MuiImageListItemBar-root {
+//       display: flex;
+//     }
+// }

@@ -1,0 +1,63 @@
+// .MuiSvgIcon-root {
+  // fill:darkolivegreen !important;
+// }
+
+.MuiTableContainer-root {
+  &::-webkit-scrollbar{
+    height:7px;
+    background-color: grey;
+  }
+  &::-webkit-scrollbar-track{
+    background-color: rgb(228, 225, 225);
+  }
+  &::-webkit-scrollbar-thumb{
+    border-radius: 25px;
+    background-color: rgb(182, 178, 178);
+  }
+}
+
+.dark-mode {
+  .MuiFormLabel-root.MuiInputLabel-root {
+    color:rgb(237, 237, 237);
+  }
+  //select rows per page 5,10,15,...
+  .MuiInputBase-root.MuiInput-root[class*='MuiSelect']{
+    color:rgb(237, 237, 237);
+    svg {
+      fill: rgb(237, 237, 237);
+    }
+  }
+}
+
+.ppe-icon-actions {
+  background-color: transparent;
+  border-radius:50%;
+  padding:3px;
+  cursor:pointer;
+  transition: all .3;
+
+  &.edit {
+    &:hover {
+      background-color: navy;
+      box-shadow: 1px 1px 2px 1px grey;
+
+      svg {
+        fill: white !important;
+      }
+
+    }
+  }
+
+  &.delete {
+    &:hover {
+      background-color: rgb(233, 17, 17);
+      // background-color: rgb(240, 248, 255);
+      box-shadow: 1px 1px 2px 1px grey;
+
+      svg {
+        fill: white !important;
+      }
+
+    }
+  }
+}

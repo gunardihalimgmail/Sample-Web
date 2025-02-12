@@ -1,0 +1,74 @@
+.ppe-maps-slider-style {
+    color:white;
+    position: relative;
+}
+
+// styling slider
+.MuiSlider-track {
+  // track garis yang aktif 
+  background-color: #00c9ffed !important;
+}
+
+.MuiSlider-thumb {
+  // track garis yang aktif 
+  background-color: #36d1fc !important;
+}
+
+.MuiSlider-markLabel {
+  // label slider di bawah
+  font-size: 11px !important;
+  font-family: monospace !important;
+  transform-origin: left bottom;
+  // transform: rotate(-45deg) !important;
+}
+
+.ppe-maps-slider-style {  
+    &.dark {
+      .MuiSlider-markLabel{
+        color: rgba(0, 0, 0) !important;
+      }
+    }
+    
+    &.light {
+      .MuiSlider-markLabel {
+        // color: rgba(255, 255, 255, 0.34) !important;
+        color: white;
+      }
+    }
+}
+
+.MuiSlider-markLabelActive {
+  // label slider di bawah
+  
+  color: white !important;
+}
+
+// mode desktop
+@media (min-width:768px){
+  .ppe-maps-slider-style {
+    // position: absolute;
+    position: relative;
+    // top:-45px;
+    // right:30px;
+    // width:250px;
+    width: 100%;
+  }
+
+}
+
+// height info window
+.gm-style-iw.gm-style-iw-c {
+  // max-height:470px !important;
+  // height:350px;
+  max-height: fit-content !important;
+  height: fit-content;
+  width:470px;
+}
+
+
+// max height isi dialog / content info window
+.gm-style-iw-d {
+  max-height: fit-content !important;
+  // max-height: 470px !important;
+  // width:700px;
+}

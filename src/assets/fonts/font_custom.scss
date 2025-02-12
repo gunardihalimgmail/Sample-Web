@@ -1,0 +1,38 @@
+$font-path-Titillium: './Titillium_Web/';
+$font-path-FFDinFont: './FF_Din_Font/';
+$font-path-Nunito: './Nunito';
+
+@font-face {
+    font-family: 'Titillium_Web_Regular';
+    src: url('#{$font-path-Titillium}/TitilliumWeb-Regular.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Titillium_Web_Light';
+    src: url('#{$font-path-Titillium}/TitilliumWeb-Light.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'Titillium_Web_Bold';
+    src: url('#{$font-path-Titillium}/TitilliumWeb-Bold.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'FF_Din_Font';
+    src: url('#{$font-path-FFDinFont}/DIN.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'FF_Din_Font_Medium';
+    src: url('#{$font-path-FFDinFont}/DIN Medium.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'FF_Din_Font_Bold';
+    src: url('#{$font-path-FFDinFont}/DIN Bold.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'FF_Din_Font_Black';
+    src: url('#{$font-path-FFDinFont}/DIN Black.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('#{$font-path-Nunito}/Nunito-VariableFont_wght.ttf') format('truetype');
+}

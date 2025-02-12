@@ -1,0 +1,19 @@
+.button {
+    padding:12px;
+    font-size: 12px;
+    background-color: #87c73c;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 20px;
+    border:none;
+    color:white;
+    text-transform: uppercase;
+
+    &:hover {
+        box-shadow: 2px 2px 5px greenyellow;
+        cursor: pointer;
+    }
+    &:active {
+        transform: translate(1px, 1px);
+    }
+}

@@ -1,0 +1,58 @@
+.dashboard-modal-title {
+  font-size:18px !important;
+}
+.login-dropdown-icon {
+  width: 30px;
+  text-align: left;
+  font-size: 12px;
+}
+
+.dash-modal-form-label {
+  font-size:13px;
+  font-family: sans-serif, Arial, Helvetica;
+  font-weight: 600;
+
+  &.required::after {
+      content:' *';
+      color: red;
+      
+  }
+}
+
+
+.modalheader{
+  &.modal-update-user-company,
+  &.modal-update-jenis,
+  &.modal-update-profile,
+  &.modal-create-user,
+  &.modal-change-password,
+  &.modal-header-global
+  {
+      &.create{
+        background:darkseagreen;
+      }
+      
+      &.edit {
+        background:cadetblue;
+      }
+  }
+  .dashboard-modal-title {
+      color:lightyellow;
+      text-shadow: 1px 2px 5px black;
+
+      svg {
+          color:lightyellow;
+          filter: drop-shadow(1px 2px 3px green);
+      }
+  }
+}
+
+.modal-input-placeholder {
+  &::placeholder{
+    font-size:13px;
+    top:50%;
+    transform: translateY(-50%);
+    position: absolute;
+    font-weight: 400;
+  }
+}

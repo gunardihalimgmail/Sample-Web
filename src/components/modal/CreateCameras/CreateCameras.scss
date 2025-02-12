@@ -1,0 +1,175 @@
+@import '../../../assets/fonts/font_custom.scss';
+
+.dashboard-modal-title {
+  font-size:18px !important;
+}
+.login-dropdown-icon {
+  width: 30px;
+  text-align: left;
+  font-size: 12px;
+}
+.modalheader{
+  &.modal-update-user-company,
+  &.modal-update-jenis,
+  &.modal-update-profile,
+  &.modal-create-user,
+  &.modal-change-password,
+  &.modal-header-global
+  {
+      &.create{
+        background:darkseagreen;
+      }
+      
+      &.edit {
+        background:cadetblue;
+      }
+  }
+  .dashboard-modal-title {
+      color:lightyellow;
+      text-shadow: 1px 2px 5px black;
+
+      svg {
+          color:lightyellow;
+          filter: drop-shadow(1px 2px 3px green);
+      }
+  }
+}
+
+.dash-modal-form-label {
+  font-size:13px;
+  font-family: sans-serif, Arial, Helvetica;
+  font-weight: 600;
+
+  &.required::after {
+      content:' *';
+      color: red;
+      
+  }
+}
+
+.modal-input-placeholder {
+  &::placeholder{
+    font-size:13px;
+    top:50%;
+    transform: translateY(-50%);
+    position: absolute;
+    font-weight: 400;
+  }
+}
+
+.ppe-modal-label-active-check {
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 400;
+  font-family: sans-serif;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+
+.ppe-modal-maps {
+  animation: show-maps 0.6s ease;
+
+  .modal-content{
+    color:white;
+    background: rgba(0,0,0,0.8); 
+  }
+}
+
+.modal-maps-close {
+  border-radius: 30px;
+  transition: all 0.2s ease;
+  color:white;
+  
+  svg {
+    font-size: 25px;
+  }
+
+  height: fit-content;
+
+  &:hover {
+    cursor: pointer;
+    filter:drop-shadow(1px 2px 2px grey);
+    background-color: rgba(220, 20, 60, 0.811);
+  }
+}
+
+.ppe-modal-maps-input-add {
+  min-width: fit-content;
+  margin-bottom: 0 !important;
+  font-weight: 500 !important;
+  font-family: monospace !important;
+  font-size: 17px !important;
+}
+
+.ppe-modal-maps-input-add-input {
+  padding-left:10px;
+  padding-right:10px;
+  color: white !important;
+  background: #00c9ff21 !important;
+  background-color: #00c9ff21 !important;
+  border: 1px solid #00c9ffed !important;
+  border-radius: 5px;
+  font-family: FF_Din_Font;  
+  &:focus{
+    outline: 1px solid #2bff0057 !important;
+    box-shadow: 1px 1px 6px 2px #00c8ff94;
+  }
+}
+
+.ppe-modal-maps-text-save {
+  color: aquamarine !important;
+  font-family: FF_Din_Font !important;
+  border:1px solid lightgreen;
+}
+
+.ppe-modal-cam-invalid-endpoint {
+  position: relative;
+  border:2px solid lightcoral !important;
+  animation: invalid-endpoint-anim 0.2s ease;
+}
+
+@keyframes invalid-endpoint-anim {
+  0%, 40%, 80%{
+    left:5px;
+  }
+  20%, 60%{
+    left:-5px;
+  }
+  100%{
+    left:0;
+  }
+}
+
+// property karena pilih dari list autocomplete
+// input:-webkit-autofill,
+// input:-webkit-autofill:focus,
+// input:-webkit-autofill:hover,
+// input:-webkit-autofill:active {
+//     -webkit-box-shadow: 0 0 0 30px #00546be6 inset !important; /* Adjust the color to match your background */
+// }
+
+
+
+@keyframes show-maps {
+  from{
+    transform:scale(0,0) skewX(70deg);
+  }
+  to {
+    transform:scale(1,1) skewX(0);
+  }
+}
+
+
+@media (max-width:767px){
+  .modal-maps-close {
+    position: relative;
+    top: -10px;
+    right:-25px;
+
+    svg {
+      font-size: 1.2rem;
+    }
+  }
+}

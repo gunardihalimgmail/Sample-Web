@@ -1,0 +1,678 @@
+.fit-header {
+    &.fit-header-none{
+      display: none !important;
+    }
+}
+
+.fit-section {
+  border:1px solid rgb(224, 229, 255);
+  border-radius: 10px;
+  box-shadow: 2px 2px 5px 2px rgb(224, 238, 255);
+  padding: 1.5rem 1.5rem 2rem 1.5rem;
+}
+
+
+.fit-final-section {
+  padding: 1.5rem 0 2rem 0;
+}
+
+.fit-btn-cancel-bg {
+  background-color: #67748E !important;
+
+  &:hover {
+    background-color: #424b52 !important;
+  }
+}
+
+.fit-btn-submit-bg {
+  background-color: #FF9F43 !important;
+  
+  &:hover {
+    background-color: #ff8510 !important;
+  }
+}
+
+
+// Toaster
+.fit-toast-position {
+  position: fixed;
+  top:20px;
+  right:20px;
+}
+
+@media(max-width:767px){
+  .fit-btn {
+    width: 100%;
+  }
+
+  // Toaster
+  .fit-toast-position {
+    position: fixed;
+    top:20px !important;
+    left:50% !important;
+    transform: translateX(-50%);
+  }
+}
+
+.fit-btn-submit, .fit-btn-cancel {
+  display: block !important;
+  padding: 0.5rem 0.85rem !important;
+  font-family: 'Nunito', Arial !important;
+  font-size: 0.85rem !important;
+  transition: all 0.5s !important;
+  font-weight: 600 !important;
+  border-radius: 3px !important;
+  border:1px solid transparent !important;
+
+  &:hover {
+    transition: all 0.5s;
+    color:#ffffff !important;
+  }
+}
+
+.fit-modal-input-placeholder, .fit-input-number-placeholder {
+  &::placeholder{
+    font-size:14px;
+    top:50%;
+    transform: translateY(-55%);
+    position: absolute;
+    font-weight: 400;
+    margin:0;
+    padding:0;
+  }
+}
+
+.fit-input-number-placeholder {
+  &::placeholder {
+    right:10px;
+  }
+}
+
+.fit-dash-modal-form-label {
+  font-size:13px;
+  // font-family: sans-serif, Arial, Helvetica;
+  font-family: 'Nunito', Arial;
+  font-weight: 600;
+
+  &.required::after {
+      content:' *';
+      color: red;
+      font-size: 15px;
+      
+  }
+}
+
+.fit-container {
+  .fit-message-custom {
+    width: 100%;
+  }
+  
+  .p-inline-message.p-component {
+    min-height: 38px;
+  }
+
+  .p-inline-message .p-inline-message-text {
+    font-size: 1rem;
+  }
+}
+
+
+// Date Picker
+.ppe-anly-datepicker-parent {
+  width: 100%;
+
+  .react-datepicker__input-container {  
+    display: flex;
+    height:100%;
+
+    .react-datepicker-ignore-onclickoutside {
+      width: 100%;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      &:disabled {
+        background-color: #e9ecef;
+      }
+    }
+  }
+
+  @media (max-width:767px) {
+      input[type="text"] {
+        width: 100% !important;
+      }
+  }
+}
+
+
+.fit-btn-prime {
+  border-radius: 3px !important;
+  border:1px solid transparent;
+  box-shadow: none;
+  
+  &.fit-btn-prime-cancel {
+    background-color: #67748E;
+  }
+  &.fit-btn-prime-save {
+    background-color: #FF9F43;
+  }
+
+  .p-button-label {
+    font-family: 'Nunito', Arial;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+}
+
+.fit-input-number {
+  width:100%;
+  min-height: 37px;
+  height:100% !important;
+  text-align: right;
+  padding-left:10px;
+  padding-right:10px;
+  // color: white !important;
+  // background: #00c9ff21 !important;
+  // background-color: #00c9ff21 !important;
+  // border: 1px solid #00c9ffed !important;
+  border: 1px solid #b1b8c0 !important;
+  border-radius: 5px;
+  font-family: "Nunito", Arial;  
+  &:focus{
+    outline: 1px solid #2bff0057 !important;
+    // box-shadow: 1px 1px 6px 2px #00c8ff94;
+    box-shadow: 0 0 6px 2px rgba(138, 229, 254, 0.718);
+  }
+}
+
+
+// *** Atur prime react 'Multi Select'
+.fit-custom-multiselect-prime {
+  // max-width: 250px;
+
+  &.p-disabled {
+    background-color: #ced6decf;
+  }
+  // .p-multiselect-label-container {
+  //   // text-overflow: ellipsis;
+  //   width: 120px; // lebar agar ada jarak dengan icon clear
+  // }
+
+  &.p-multiselect {
+    .p-multiselect-label {
+      padding:0.30rem 0.75rem;
+      font-size: 15px;
+    }
+  }
+}
+
+// *** prime react 'Password'
+
+.fit-custom-password {
+  &.p-password.p-component {
+    
+    width: 100%;
+    height: 37px;
+
+    .p-icon-field {
+      
+      width:100%;
+
+      .p-password-input {
+        width:100%;
+        height: 37px;
+
+        &::placeholder {
+            font-size: 14px;
+        }
+        
+        
+        &.p-disabled {
+          background-color: #ced6decf;
+        }
+      }
+
+      span {
+        display: flex;  // buat posisi icon eye di tengah vertical
+      }
+    }
+  }
+}
+
+.fit-custom-inputtext 
+{
+
+  height: 37px;
+  
+  &.p-disabled {
+    background-color: #ced6decf;
+  }
+  
+}
+
+.fit-custom-chips {
+
+  ol, ul, dl {
+    margin-bottom:0;  // agar tidak ada gap di bagian margin bawah input chips
+  }
+
+  .p-inputtext {
+
+      width: 100%;
+
+      .p-chips-token {
+        margin-bottom: 10px;  // jarak spasi bawah setiap chip
+      }
+  }
+
+  &.p-disabled {
+    ul {
+      background-color: #ced6decf;
+    }
+  }
+}
+
+.fit-upload-image-single {
+  
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  span {
+    color:red;
+  }
+
+  &:hover {
+    background-color: #fbd2d2;
+    color:#f42121;
+  }
+
+  // Kondisi upload image single ter-disabled
+  &.fit-uploadsingle-image-disabled {
+    span {
+      color: grey;
+    }
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}
+
+
+.fit-uploadfile-custom-gap {
+  gap: 8px;
+  flex-wrap:wrap;
+
+  .fit-img-container
+  , img
+   {
+    width: 150px !important;
+    height: 150px;
+  }
+
+  
+}
+
+@media (max-width: 829px) {
+  .fit-uploadfile-custom-gap {
+    flex-wrap: wrap;
+    justify-content: center;
+
+    .fit-uploadfile-cont {
+      
+      justify-content: center;
+
+      .fit-uploadfile-info-cont {
+        margin-left:0;
+      }
+    }
+
+    .fit-img-container
+    , img {
+      width: 150px !important;
+      height: 150px;
+    }
+
+  }
+}
+@media (min-width: 830px) {
+  .fit-uploadfile-custom-gap {
+    flex-wrap: nowrap !important;
+    justify-content: start;
+
+    .fit-uploadfile-cont {
+      
+      justify-content: start;
+
+      .fit-uploadfile-info-cont { 
+        margin-left:0.5rem;
+        padding-inline: 5px;
+      }
+    }
+
+    .fit-img-container 
+    {
+      width: 200px !important;
+      height: 150px;
+    }
+    img {
+      width: 150px !important;
+      height: 150px;
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .fit-uploadfile-custom-gap {
+    gap: 20px;
+
+    // .fit-img-container 
+    // , img
+    // {
+    //   width: 100%;
+    // }
+  }  
+}
+
+
+
+// *** 'ConfirmDialog' (Prime)
+
+// hide x icon (agar escape bekerja)
+.fit-confirmdialog-hide-x-icon {
+  .p-dialog-header-icons {
+    display: none;
+  }
+}
+// hide button bawaan Accept dan Reject
+.fit-confirmdialog-delete-file {
+  .p-dialog-footer {
+    display: none;
+  }
+}
+
+// ** Container Image kondisi kosong agar bisa di klik tampil fileupload
+.fit-icon-image-upload {
+  box-shadow: none;
+  // border: 1px solid red;
+  background-color: transparent;
+  border:none;
+  border-radius: 50% !important;
+  width:100%;
+  height:100%;
+
+
+  // *** Icon Image di tengah
+  .p-button-icon {
+    font-size:70px;
+    color:darkgrey;
+
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  // menonaktifkan ripple
+  .p-ink[data-pc-name="ripple"]{
+    display: none;
+  }
+
+}
+
+// Dialog success
+.fit-confirmdialog-success-confirm {
+
+  width: 250px;
+  height: 200px;
+
+  .p-confirm-dialog-message {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .p-dialog-content {
+    border-radius: 0 0 6px 6px;
+  }
+
+  // hide button bawaan Accept dan Reject
+  .p-dialog-footer {
+    display: none;
+  }
+}
+
+.p-button-custom-flat {
+  box-shadow: none;
+  border-color: #FF9F43;
+  border-radius: 50% !important;
+  width: 0;
+  height: 25px;
+
+ .p-ink[data-pc-name="ripple"]{
+    background-color: #ff9e436f;
+  }
+
+}
+
+// Tag Prime "Image" untuk preview pada fileupload-image-single
+.fit-img-container{
+
+  // * Shape circle
+  &.fit-file-shape-circle {
+    .fit-p-image-upload-preview-custom{
+    
+      .p-image-preview-indicator {
+        border-radius: 50%;
+      }
+    }
+  }
+
+  // * Shape square
+  &.fit-file-shape-square {
+    .fit-p-image-upload-preview-custom{
+    
+      .p-image-preview-indicator {
+        border-radius: 0%;
+      }
+    }
+  }
+
+
+  // * untuk type document, maka tidak perlu border radius karena pakai icon extension
+  &.fit-file-document {
+    .fit-p-image-upload-preview-custom {
+      img {
+        border-radius: 0 !important;
+      }
+      .p-image-preview-indicator {
+        border-radius: 0 !important;
+      }
+    }
+  }
+}
+
+// * Theme Input Text
+.fit-input-text-theme-cyan {
+  &:focus{
+    border-color:#06b6d4 !important;
+    box-shadow: 0 0 0 0.2rem #a5f3fc !important;
+  }
+}
+
+.fit-input-date-theme-cyan {
+  input:focus {
+    border-color:#06b6d4 !important;
+    box-shadow: 0 0 0 0.2rem #a5f3fc !important;
+  }
+}
+
+.fit-input-text-theme-amber {
+  &:focus {
+    box-shadow: 0 0 0 0.2rem #fef08a !important;
+    border-color: #f59e0b !important;
+  }
+}
+
+// * Theme Input Number
+.fit-input-number-theme-amber {
+  
+  &:focus {
+    box-shadow: 0 0 0 0.2rem #fef08a !important;
+    border-color: #f59e0b !important;
+  }
+}
+
+.fit-input-date-theme-amber {
+  input:focus { 
+    box-shadow: 0 0 0 0.2rem #fef08a !important;
+    border-color: #f59e0b !important;
+  }
+}
+
+// Multiple Upload
+.fit-multiple-upload {
+  border-radius: 50% !important; 
+  width: 40px;
+  height: 40px;
+}
+
+
+// * File Upload Multiple
+
+@keyframes fit-upload-multiple-item-anim {
+  from {
+    transform: translateY(-20px);
+    opacity: 0.2;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// * Message Error (default)
+.fit-multiple-upload-container {
+
+  .fit-upload-multiple-item-anim {
+    animation: fit-upload-multiple-item-anim 1.5s ease-in-out;
+  }
+
+  .p-fileupload-content {
+    padding:2rem 0;
+
+    .fit-item-template-filename {
+      display: -webkit-box;
+      box-orient: vertical;
+      -webkit-box-orient: vertical;
+      -moz-box-orient: vertical;
+      line-clamp: 2;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      
+    }
+
+  }
+
+  .p-message{
+    &.p-message-error{
+      .p-message-wrapper{
+        flex-wrap: wrap;
+
+        svg{
+          display: none;
+        }
+
+        // button close
+        .p-message-close {
+          margin:0 auto;  // center
+
+          svg{
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}
+
+// * Message Error (khusus perangkat mobile)
+// ** Atur style message error (size mobile)
+@media (max-width:767px){
+  .fit-multiple-upload-container {
+
+    .p-message{
+      &.p-message-error{
+        .p-message-wrapper{
+
+            // icon error on top
+            svg {
+              display: none;
+            }
+
+            // Body message
+            flex-wrap: wrap !important;
+            font-size: 14px;
+            padding-inline: 16px;
+            padding-bottom: 7px;
+
+            .p-message-summary {
+              overflow-wrap: anywhere;
+            }
+
+            // button close
+            .p-message-close {
+              margin:0 auto;  // center
+
+              svg{
+                display: block;
+              }
+            }
+        }
+      } 
+    }
+  }
+}
+
+
+
+.anim-container-rotate{
+  animation: anim-check-container-rotate 2s ease;
+}
+
+// * Animation Rotate Icon
+@keyframes anim-check-container-rotate {
+  0%{
+    transform: rotateY(0);
+  }
+  50%{
+    transform: rotateY(-65deg);
+  }
+  70%{
+    transform: rotateY(75deg);
+  }
+
+  // * Seolah ada blink / bergetar
+  82%{
+    transform: rotateY(55deg);
+  }
+  84%{
+    transform: rotateY(35deg);
+  }
+  86%{
+    transform: rotateY(55deg);
+  }
+  88%{
+    transform: rotateY(35deg);
+  }
+  90%{
+    transform: rotateY(55deg);
+  }
+  92%{
+    transform: rotateY(35deg);
+  }
+  // ----
+
+  100%{
+    transform: rotateY(0);
+  }
+}

@@ -1,0 +1,102 @@
+
+.camol-custom-selectbutton-group {
+  .p-button {
+    border-radius: revert-layer !important;
+    padding-inline:15px !important;
+    padding-block: 10px !important;
+  }
+}
+
+
+.camol-prime-table {
+    
+  // prime warna genap
+  .p-datatable .p-datatable-tbody > tr:not(.p-highlight) {
+      // background-color: #fcffee;
+      background-color: #ffffff;
+  }
+
+  // prime warna ganjil
+  .p-datatable.p-datatable-striped .p-datatable-tbody > tr.p-row-odd:not(.p-highlight) {
+    // background-color: #f6f5ff;
+    background-color: #edf6ff;
+  }
+
+  // .p-datatable .p-datatable-tbody > tr.p-row-odd {
+  //     background-color: #ff0000;
+  //   }
+}
+
+// *** Atur prime react multi select
+.custom-multiselect-prime {
+  max-width: 250px;
+
+  .p-multiselect-label-container {
+    // text-overflow: ellipsis;
+    width: 120px; // lebar agar ada jarak dengan icon clear
+  }
+}
+.p-multiselect-items {
+  padding-left: 0;
+}
+.p-multiselect-filter-container {
+  input {
+    height: 39px !important;
+  }
+}
+@media (max-width:767px){
+  .custom-multiselect-prime {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+// ...
+
+
+// ** Tag Prime React (Global)
+.camol-icon-tag-parent {
+  position: relative;
+  
+  // ** icon bulat pada tag
+  .camol-icon-tag-radius {
+    position:absolute;
+    display: block !important;
+    left:5px;
+    top:50%;
+    transform: translateY(-50%);
+    // background-color: green !important;
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50%;
+  }
+  .custom-tag.p-tag {
+      padding-left:20px !important;
+      // padding-block: 0px;
+  }
+}
+
+// ...
+
+
+// Style Button PrimeReact
+.p-button {
+  border-radius: 6px !important;
+  // padding: 0.25rem 0.75rem;
+
+  .p-button-label {
+    font-weight: 700;
+    font-family: Inter Var, FF_Din_Font;
+  }
+
+  // size button
+  &.custom-prime-size-small {
+    font-size: 0.875rem !important;
+    padding:0.35625rem 0.79375rem !important;
+  }
+
+  &.custom-prime-size-normal {
+    font-size: 1rem !important;
+    padding:0.75rem 1.25rem !important;
+  }
+}
+// ... ** button prime react

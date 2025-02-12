@@ -1,0 +1,35 @@
+.fit-loading {
+  height:50vh;
+}
+
+.ppe-anly-datepicker-container {
+  position: relative;
+  min-height: 37.28px;
+  
+  .ppe-anly-datepicker-icon {
+      position:absolute;
+      z-index:4;
+      margin-left:5px;
+      top: 50%;
+      transform: translateY(-50%);
+  }
+
+  input {
+    border: 1px solid #aeaeae;
+    border-radius: 4px;
+    // box-shadow: inset 0 2px 2px #e9e9e9;
+    font-size: 15px;
+    line-height: 19px;
+    padding: 6px 10px 6px 35px;
+
+    &:focus {
+      // border: #aeaeae;
+      // box-shadow: inset 0 2px 2px #e9e9e9,0 0 10px 0 rgba(73,107,125,.3);
+      box-shadow: 0 0 0.25rem 0.1rem rgba(13, 110, 253, 0.25);
+      border-color: #86b7fe;
+      outline: none;
+    }
+  }
+
+
+}

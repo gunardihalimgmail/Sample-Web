@@ -1,0 +1,235 @@
+::-webkit-scrollbar{
+  width:10px;
+  height:8px;
+  // background-color: grey;
+}
+::-webkit-scrollbar-track{
+  // background-color: rgba(228, 225, 225, 0.495);
+  background-color: rgba(96, 196, 227, 0.256);
+  
+}
+::-webkit-scrollbar-thumb{
+  border-radius: 25px;
+  // background-color: rgb(255, 183, 129);
+  background: linear-gradient(to right, rgba(61, 171, 161, 0.436), rgba(72, 187, 207, 0.852));
+}
+
+.ppe-loader-main {
+  height:100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(242, 234, 234)
+}
+
+@keyframes muncul{
+  from {
+    transform: translateY(30%);
+    opacity:0;
+  }
+  to {
+    transform: translateY(0%);
+    opacity: 1;
+  }
+}
+.main-container {
+    position: relative;
+    // display: flex;
+    height:100%;
+    animation: muncul 0.5s ease-in-out;
+
+    .main-left {
+      position: fixed;
+      width:0;
+      height:100%;
+      overflow-x:auto;
+      z-index:99;
+      background-color: rgba(200, 221, 221, 1);
+      // background-color: rgba(154, 170, 170, 0.7);
+      box-shadow: none;
+      transition: all 0.1s linear;
+
+      &.open {
+        width: 200px;
+        box-shadow: 0px 0 5px 1px grey;
+      }
+
+      // side left sub
+        &::-webkit-scrollbar {
+          width:4px;
+      }
+      &::-webkit-scrollbar-track {
+          // background-color: rgb(241, 241, 241);
+          background-color: rgb(226 232 240 / 1);
+      }
+      &::-webkit-scrollbar-thumb {
+          background: linear-gradient(rgb(86, 197, 182), rgb(150, 226, 215), rgb(86, 197, 182));
+      }
+    }
+
+    .main-right {
+      position: relative;
+      height:100%;
+      width: auto;
+      overflow-y:auto;
+      margin-left: 0;
+      transition: all 0.1s linear;
+
+      &.open {
+        margin-left:200px;
+      }
+
+      // .main-right-menu {
+      //   z-index:1;
+      //   position:absolute;
+      //   top:5px;
+      //   left:30px;
+      // }
+    }
+
+    @media (max-width: 767px) {
+      .main-right{
+          &.open {
+            margin-left:0;
+          }
+      }
+    }
+
+}
+
+
+// testing hamburger
+.ppe-dashtangki-page-title {
+  color:#000;
+  font-size: 1.125rem;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+}
+
+span.ppe-dashtangki-mdi-span {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-right:10px;
+  width:36px;
+  height:36px;
+  box-shadow: 0 3px 8.3px 0.7px rgb(163 93 255 / 35%);
+  border-radius: 4px;
+}
+
+.ppe-dash-welcome-title {
+  margin-right:6px;
+  // font-family: Arial, Helvetica, sans-serif;
+  font-family: Montserrat;
+  font-weight: lighter;
+  font-size: 14px;
+  width: 150px;
+  // font-weight: 900;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align:right;
+}
+
+
+#ppe-dropdown-basic-user {
+  border-radius: 50%;
+  transition: all .1s;
+
+  &::after {
+      display: none;
+  }
+
+  &:hover{
+      outline: 3px solid cadetblue;
+      outline-offset:2px;
+      outline-style: solid;
+
+      // rotate avatar icon when hover
+      .ppe-dashboard-dropdown-basic-user-fauser .svg-inline--fa.fa-user  {
+          animation: spin-avatar .3s ease-in !important;
+      }
+      @keyframes spin-avatar {
+           0% { transform:rotate(15deg);} 
+           20% { transform:rotate(-15deg);} 
+           40% { transform:rotate(15deg);} 
+           60% { transform:rotate(-15deg);} 
+      }
+  }
+}
+
+.ppe-login-dropdown-header-container {
+  margin-top:-10px;
+}
+
+.ppe-login-dropdown-header {
+  // margin-left: 5px;
+  font-size:10px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-style: italic;
+}
+
+// item in dropdown.menu
+.ppe-dash-link-dropdown {
+  display: block;
+  padding-left: 10px;
+  padding-right:10px;
+  white-space: nowrap;    // sambung ke kanan tanpa enter baris baru
+  color: black;
+  text-decoration: none;
+  cursor:pointer;
+  // margin-bottom: 1px;
+
+  &:hover {
+      background: bisque;
+  }
+}
+
+.ppe-login-dropdown-icon {
+  width: 30px;
+  text-align: left;
+  font-size: 12px;
+}
+
+.ppe-login-dropdown-content {
+  margin-left: 5px;
+  font-size:12px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.ppe-dash-link-logout {
+  margin-top: -5px;
+}
+
+.ppe-bg-gradient-success {
+  // background:linear-gradient(90deg,#da8cff,#9a55ff);
+  // background:linear-gradient(90deg,#da8cff,#9a55ff);
+  // background:linear-gradient(90deg, #0075d3, #0067ff);
+  background:linear-gradient(90deg, #008ea1, #01cfad);
+}
+
+.ppe-margin-body {
+  margin:40px; 
+}
+
+@media (max-width:767px){
+
+  .ppe-dash-welcome-title {
+    width: 60px;
+  }
+
+  .ppe-margin-body {
+      margin:20px; 
+  }
+
+  .ppe-title-icon {
+    width: 110px;
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size:smaller;
+    text-overflow: ellipsis;
+  }
+}

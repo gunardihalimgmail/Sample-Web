@@ -1,0 +1,70 @@
+// ** Container untuk Image
+.roi-image-container {
+  height: 95vh;
+  // width: 500px;
+  // overflow: auto;
+  
+  border:2px solid lightblue;
+  border-radius: 5px;
+}
+
+
+.roi-noimage {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top right, rgb(241, 237, 237), rgb(241, 241, 241));
+}
+
+.roi-color-area-safe {
+  width: 50px;
+  height:15px;
+  background: linear-gradient(to right, rgb(53, 213, 74),rgb(163, 248, 189));
+  border-radius: 5px;
+}
+.roi-color-area-danger {
+  width: 50px;
+  height:15px;
+  background: linear-gradient(to right, rgb(255, 62, 62),#f8a3a3);
+  border-radius: 5px;
+}
+
+.watermark-container {
+  position: absolute;
+  width: 350%;
+  height: 250%;
+  z-index: 1;
+  left:0;
+  top:0;
+
+  .watermark-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    // border:1px solid red;
+    overflow: hidden;
+    
+    &::after{
+      content:"";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: url("../../../assets/images/iot_logo_grey_opacity.png");
+      background-repeat: repeat;
+      background-size: 400px 120px;
+      filter:grayscale(100%) opacity(50%);
+      transform: rotate(-45deg) scale(2.5,3.5);
+      z-index:-1;
+      left: 0;
+      top: 0;
+    }
+  }
+}
+
+.roi-progress {
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+
+}

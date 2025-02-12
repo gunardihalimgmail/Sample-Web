@@ -1,0 +1,188 @@
+.login-side-right-p {
+  font-family: 'Roboto';
+  padding-top:5px;
+}
+
+.box-input{
+  // border:1px solid rgb(105, 108, 255);
+  border:1px solid lightgrey;
+  border-radius:10px;
+  position:relative;
+
+  &.large .input-title {
+      font-size: 15px;
+  }
+
+
+  .input-title {  // label placeholder
+      transition: all 0.17s ease;
+      pointer-events: none;   // make cannot be clicked
+      user-select: none;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 13px;
+      // font-weight: 50;
+      color: rgb(161, 161, 161);
+      font-family: arial;
+  }
+
+  .input-style {
+      border:none;
+      background-color: transparent;
+
+      &.large {
+          height: 50px;
+      }
+
+      // &:focus-within {
+      //     + .input-title {
+      //         transform:translateY(-17px);
+      //         background-color: white;
+      //         color: rgb(105, 108, 255);
+      //         font-size: 11px;
+      //     }
+      // }
+  }
+
+  &.focused .input-style {
+
+      border-radius:10px;
+  }
+
+  // &.focused.box-input {
+      // border: 1px solid transparent;
+  // }
+  &.focused:focus-within {
+      border: 2px solid rgb(105, 108, 255);
+
+      .input-title {
+          color: rgb(105, 108, 255);
+          font-weight: 600;
+      }
+  }
+
+  &.focused {
+      &.medium .input-title {
+          top: -1px;
+      }
+      &.large .input-title {
+          top: -1px;
+          font-size:13px;
+      }
+      .input-title {
+          // transform:translateY(-17px);
+          font-size:11px;
+          background-color: white;
+          padding-left:3px;
+          padding-right:3px;
+      }
+  }
+
+}
+
+.password-container {
+  position: relative;
+
+  .input-password {
+      padding-right: 3.5rem;
+  }
+
+  .password-hideshow-icon {
+      position: absolute !important;
+      top:50%;
+      right:0;
+      transform:translateY(-50%);
+      cursor:pointer;
+      
+      > .monkey, .monkey-hands {
+
+          position: absolute;
+          top:50%;
+          right:10px;
+          transform:translateY(-50%);
+  
+          svg {
+              width: 35px;
+              height: 35px;
+
+          }
+      }
+
+      > .monkey-hands {
+          z-index:2;
+          perspective: 80px;
+
+          svg {
+              transform-origin: 50% 100%;
+              transition: transform .2s ease-in, opacity .1s .1s;
+              // animation: ShowIcon 1s forwards;
+          }
+
+          &.show {
+              transition: all 3s ease !important;
+              svg {
+                  // animation: HideIcon 1s forwards;
+                  transform-origin: 50% 100% !important;
+                  transition: transform .2s ease, opacity .1s .1s !important;
+                  transform: perspective(80px) rotateX(-80deg) !important;
+                  opacity:0 !important;
+              }
+          }
+      }
+
+      > .monkey {
+      
+          &:not(.show) {
+              &::before {
+                  content: "";
+                  position:absolute;
+                  height:10px;
+                  width:5px;
+                  border-bottom:4px solid #3C302A;
+                  left:50%;
+                  transform:translateX(-50%);
+                  bottom: 6px;
+                  border-radius: 35% !important;
+              }
+          }
+
+          &.show {
+              &::before{
+                  content:"";
+                  border:0;
+                  position:absolute;
+                  width:8px;
+                  height:10px;
+                  border-bottom:2px solid #3C302A;
+                  left:50%;
+                  transform:translateX(-50%);
+                  bottom: 6px;
+                  border-radius: 65% !important;
+              }
+          }
+      }
+
+  }
+
+  @keyframes HideIcon {
+      from {
+          transform: perspective(70px) rotateX(0deg);
+          opacity:1;
+      }
+      to {
+          transform: perspective(70px) rotateX(-70deg);
+          opacity:0;
+      }
+  }
+  @keyframes ShowIcon {
+      from {
+          transform: perspective(70px) rotateX(-70deg);
+          opacity:0.2;
+      }
+      to {
+          transform: perspective(70px) rotateX(0deg);
+          opacity:1;
+      }
+  }
+}

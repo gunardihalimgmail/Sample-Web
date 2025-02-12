@@ -1,0 +1,71 @@
+.live-parent {
+  border: 1px solid rgba(211, 211, 211, 0.46);
+  border-width: 2px;
+  border-radius: 10px;
+
+  .live-container {
+    font-family: Arial;
+    font-size: 0.8rem;
+  
+    .live-img {
+      border-radius: 10px;  
+    }
+  }
+
+  // .table {
+  //   width: 100% !important;
+  //   border:1px solid red !important;
+  // }
+  // thead, tbody, tr, td, th {
+  //   display: block;
+  // }
+  // tr:after {
+  //   content: ' ';
+  //   display: block;
+  //   visibility: hidden;
+  //   clear:both;
+  // }
+  // thead th {
+  //   height: 100%;
+  // }
+  // tbody {
+  //   height: 200px;
+  //   overflow-y:auto;
+  // }
+  // tbody td, thead th {
+  //   width: 20%;
+  //   float:left;
+  // }
+  
+
+  // Body
+  .MuiTableCell-root.MuiTableCell-body {
+    font-family: FF_Din_Font;
+    // font-size:10px;
+  }
+
+  // Header
+  .MuiTableCell-root.MuiTableCell-head {
+    font-family: FF_Din_Font_Medium;
+    font-weight: 600;
+    font-size:0.8rem;
+  }
+  .MuiPaper-root {
+    box-shadow:1px 2px 3px 1px lightgrey;
+  }
+
+  .MuiTableRow-root:nth-of-type(even) {
+    background-color: aliceblue;
+  }
+  
+  .MuiTableRow-head .MuiTableCell-head
+  {
+    background-color: antiquewhite;
+  }
+
+}
+
+
+
+
+

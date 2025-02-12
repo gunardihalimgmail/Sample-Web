@@ -1,0 +1,80 @@
+:root{
+  --warna-font:white;
+  --na-sub-count: 6;
+}
+
+@keyframes tampil {
+  from {
+    top: 100%;
+  }
+  to {
+    top: 0%;
+  }
+}
+
+@keyframes hilang {
+  from {
+    top: 0%;
+  }
+  to {
+    top: -100%;
+  }
+}
+
+// @for $i from 1 through var(--na-sub-count) {
+//   .na-headersub:nth-of-type(#{$i}) {
+//     background-color: lighten(rgb(52, 45, 7), $i * 10%);
+//   }
+// }
+
+.na-custom-font {
+  font-size:calc(1.275rem + 0.3vw);
+  font-weight: 500;
+  margin-top:0;
+  color: var(--warna-font);
+  line-height: 1.2;
+}
+
+
+
+.na-header {
+  position: relative;
+  display: flex;
+  // border:1px solid black;
+
+  .na-headersub {
+    position: relative;
+    overflow: hidden;
+    // border:1px solid red;
+    
+    .na-headersub-seq {
+        // display: inline-flex;
+        transition: all 0.5s ease;
+        position: absolute;
+        // border:1px solid blue;
+        top:100%;
+
+        // font-size:1.7rem;  // buat width kotak jadi melebar 1.2
+
+        // text-shadow: 0px 0.5px 1px maroon;
+        text-shadow: 0px .1px .5px lightcoral;
+        font-weight: bold;
+        // opacity: "0";
+
+        // &.na-hide {
+        //     animation: hilang 0.5s linear forwards;
+        // }
+
+        // &.na-show
+        // {
+        //     animation: tampil 0.5s linear forwards;
+        // }
+
+    }
+  }
+}
+
+
+// .test.na-show {
+//   animation: tampil 0.5s linear forwards;
+// }
