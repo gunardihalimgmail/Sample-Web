@@ -1,6 +1,6 @@
 <<<<<<< HEAD
 # Sample-Web
-Link : https://gunardihalimgmail.github.io/Sample-Web/transaksi/penjualan/form
+Link : https://gunardihalimgmail.github.io/Sample-Web/
 
 For Sample
 =======
