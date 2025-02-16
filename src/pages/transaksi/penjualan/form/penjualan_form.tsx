@@ -624,7 +624,13 @@ const TransaksiPenjualanForm = () => {
                                               placeholder:'Nomor Faktur',
                                               required:true,
                                               style:{
-                                                background_color:'cornsilk'
+                                                background_color:'cornsilk',
+                                                input_group:{
+                                                  enabled:true,
+                                                  display:{
+                                                    mobile: false // nonaktif inputgroup ukuran mobile
+                                                  }
+                                                }
                                               },
                                               edit:{
                                                 key_name:'nomor_faktur'
@@ -640,6 +646,15 @@ const TransaksiPenjualanForm = () => {
                                               label:'Telepon',
                                               name:'name_telepon',
                                               placeholder:'Input Telepon',
+                                              required:false,
+                                              style:{
+                                                input_group:{
+                                                  enabled:true,
+                                                  display:{
+                                                    mobile:false
+                                                  }
+                                                }
+                                              },
                                               edit:{
                                                 key_name:'telepon'
                                               },
@@ -657,6 +672,14 @@ const TransaksiPenjualanForm = () => {
                                               disabled_days:{
                                                 sunday: true,
                                                 saturday: true
+                                              },
+                                              style:{
+                                                input_group:{
+                                                  enabled:true,
+                                                  display:{
+                                                    mobile:false
+                                                  }
+                                                }
                                               },
                                               save:{
                                                 key_name:'tanggal',
@@ -678,6 +701,14 @@ const TransaksiPenjualanForm = () => {
                                               name:'name_tanggal_check',
                                               placeholder:'Input Tanggal',
                                               required:false,
+                                              style:{
+                                                input_group:{
+                                                  enabled:true,
+                                                  display:{
+                                                    mobile:false
+                                                  }
+                                                }
+                                              },
                                               disabled:false,
                                               disabled_days:{
                                                 sunday: true,
@@ -704,6 +735,14 @@ const TransaksiPenjualanForm = () => {
                                               placeholder:'Select a Topic',
                                               select_item_type:'single',
                                               required:true,
+                                              style:{
+                                                input_group:{
+                                                  enabled:true,
+                                                  display:{
+                                                    mobile:false
+                                                  }
+                                                }
+                                              },
                                               on_change:{
                                                 parse_value_to:{multi_select_name:['name_kategori', 'name_berita']}
                                               },
@@ -736,6 +775,14 @@ const TransaksiPenjualanForm = () => {
                                               placeholder:'Select a Kategori',
                                               select_item_type:'single',
                                               required:true,
+                                              style:{
+                                                input_group:{
+                                                  enabled:true,
+                                                  display:{
+                                                    mobile:false
+                                                  }
+                                                }
+                                              },
                                               on_change:{
                                                 parse_value_to:{multi_select_name:['name_berita']}
                                               },
@@ -780,6 +827,14 @@ const TransaksiPenjualanForm = () => {
                                               placeholder:'Select a Berita',
                                               select_item_type:'single',
                                               required:true,
+                                              style:{
+                                                input_group:{
+                                                  enabled:true,
+                                                  display:{
+                                                    mobile:false
+                                                  }
+                                                }
+                                              },
                                               data_source:{
                                                 type:'api',
                                                 url:'https://api-berita-indonesia.vercel.app/{param1}/{param2}',
@@ -815,6 +870,14 @@ const TransaksiPenjualanForm = () => {
                                               placeholder:'Select a Kategori Tribun',
                                               select_item_type:'single',
                                               required:true,
+                                              style:{
+                                                input_group:{
+                                                  enabled:true,
+                                                  display:{
+                                                    mobile:false
+                                                  }
+                                                }
+                                              },
                                               data_source:{
                                                 type:'api',
                                                 url:'https://api-berita-indonesia.vercel.app/',
@@ -952,6 +1015,14 @@ const TransaksiPenjualanForm = () => {
                                               name:'name_customer',
                                               required:true,
                                               placeholder:'Input Customer',
+                                              style:{
+                                                input_group:{
+                                                  enabled:true,
+                                                  display:{
+                                                    mobile:false
+                                                  }
+                                                }
+                                              },
                                               save:{
                                                 key_name:'customer'
                                               }
@@ -963,6 +1034,14 @@ const TransaksiPenjualanForm = () => {
                                               label:'Keterangan',
                                               name:'name_keterangan',
                                               placeholder:'Input Keterangan',
+                                              style:{
+                                                input_group:{
+                                                  enabled:true,
+                                                  display:{
+                                                    mobile:false
+                                                  }
+                                                }
+                                              },
                                               edit:{
                                                 key_name:'keterangan'
                                               },
@@ -1536,6 +1615,7 @@ const TransaksiPenjualanForm = () => {
     }
     return numbers;
   }
+
 
   return (
     <div>

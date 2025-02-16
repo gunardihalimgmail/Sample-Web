@@ -11,7 +11,8 @@
       z-index:4;
       margin-left:5px;
       top: 50%;
-      transform: translateY(-50%);
+      // transform: translateY(-50%);  // icon DateRangeRounded
+      transform: translateY(-50%) translateX(6px);  // icon pi-calendar
   }
 
   input {

@@ -111,6 +111,12 @@ export type FormTemplateDataInputType = {
                                             required?:boolean;
                                             style?:{
                                               background_color?:'cornsilk';
+                                              input_group?:{
+                                                enabled:boolean;  // model class inputgroup nya primereact
+                                                display?:{
+                                                  mobile?:boolean;    // apakah mau pakai inputgroup untuk ukuran mobile
+                                                }
+                                              };
                                             };
                                             save:{
                                               key_name:string
@@ -131,6 +137,14 @@ export type FormTemplateDataInputType = {
                                             disabled_days?:{
                                               saturday?:boolean;
                                               sunday?:boolean
+                                            };
+                                            style?:{
+                                              input_group?:{
+                                                enabled:boolean;  // model class inputgroup nya primereact
+                                                display?:{
+                                                  mobile?:boolean;    // apakah mau pakai inputgroup untuk ukuran mobile
+                                                }
+                                              };
                                             };
                                             save:{
                                               key_name:string;
@@ -169,6 +183,14 @@ export type FormTemplateDataInputType = {
                                             name:string;
                                             placeholder:string;
                                             required?:boolean;
+                                            style?:{
+                                              input_group?:{
+                                                enabled:boolean;  // model class inputgroup nya primereact
+                                                display?:{
+                                                  mobile?:boolean;    // apakah mau pakai inputgroup untuk ukuran mobile
+                                                }
+                                              };
+                                            };
                                             on_change?:{
                                                 parse_value_to:{multi_select_name:string[]}  // hanya khusus input multi-select
                                             };
@@ -645,6 +667,26 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
   const [arrConfigDetail, setArrConfigDetail] = useState<{[name:string]:FormTemplate_DetailTable[]}>({});
   const arrConfigDetailRef = useRef<{[name:string]:FormTemplate_Detail}>({});
 
+  const [statusWindowMobile, setStatusWindowMobile] = useState<boolean>(false);
+
+  useEffect(()=>{
+    const windowFunc = () => {
+      if (window.innerWidth < 768){
+        setStatusWindowMobile(true);
+      }
+      else {
+        setStatusWindowMobile(false);
+      }
+    }
+
+    windowFunc();
+
+    window.addEventListener('resize', windowFunc);
+
+    return () => {
+      window.removeEventListener('resize', windowFunc);
+    }
+  },[])
 
   const randomNumberArray = (repeat:number) => {
     // * only for testing
@@ -1307,7 +1349,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                       return (
                                               <Trend 
                                                 data={Array.isArray(get_value) ? get_value : []} 
-                                                strokeWidth={2}
+                                                strokeWidth={4}
                                                 strokeLinecap={'butt'}
 
                                                 height={40} 
@@ -6510,25 +6552,59 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                     obj_input['type'] == 'text' && (
                   
                                                                                                         <Form.Group className={`mb-2`}>
-                                                                                                            <Form.Label className={`mb-1 fit-dash-modal-form-label`+
-                                                                                                                                  ` ${obj_input?.['required'] ? 'required' : ''}`}>{obj_input['label']}</Form.Label>
-                                                                                                            <Form.Control type="text" className={`fit-modal-input-placeholder fit-input-text-theme-amber`}
-                                                                                                                              style={{
-                                                                                                                                      backgroundColor: obj_input?.['style']?.['background_color'] ?? ''
-                                                                                                                                      , color: (objDisabled?.[obj_input?.['index']] ? 'grey' : '') // jika required dan disabled maka warna 'grey'
-                                                                                                                              }}
-                                                                                                                              placeholder={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']] ? '' : obj_input['placeholder']?.toString()} // jika disabled, maka placeholder di kosongkan
-                                                                                                                              ref={inputRefs[obj_input?.['index']]}
-                                                                                                                              onBlur={()=>funcBlurInput(obj_input?.['index'], obj_input)}
-                                                                                                                              name={obj_input['name']}
-                                                                                                                              maxLength={obj_input?.['max_length'] ?? -1}
-                                                                                                                              disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
-                                                                                                                              autoComplete={`off`}
-                                                                                                                              autoCapitalize='off'
-                                                                                                                              autoCorrect='off'
-                                                                                                                              spellCheck='false'
-                                                                                                                              onChange={(event)=>changeControl(obj_input?.['index'], obj_input?.['save']?.['key_name'], obj_input, event)}
-                                                                                                                              />
+
+
+                                                                                                              <div className={`${
+                                                                                                                                    ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true) &&
+                                                                                                                                    (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true)) 
+                                                                                                                                        ? 'p-inputgroup':
+                                                                                                                                    ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                                      && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                                      && !statusWindowMobile
+                                                                                                                                    ) ? 'p-inputgroup' : ''
+                                                                                                                                }`}
+
+                                                                                                                  style={{height: 
+                                                                                                                              ((typeof obj_input?.['style']?.input_group !== 'undefined' && obj_input?.['style']?.input_group?.enabled === true) &&
+                                                                                                                              (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true))
+                                                                                                                                  ? 'auto':
+                                                                                                                              ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                                        && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                                        && !statusWindowMobile
+                                                                                                                              ) ? 'auto':''
+                                                                                                                          }}
+                                                                                                              >
+
+                                                                                                                <Form.Label className={`mb-1 fit-dash-modal-form-label`+
+                                                                                                                                      ` ${
+                                                                                                                                            ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true) &&
+                                                                                                                                            (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true)) 
+                                                                                                                                                ? 'p-inputgroup-addon':
+                                                                                                                                            ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                                              && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                                              && !statusWindowMobile
+                                                                                                                                            ) ? 'p-inputgroup-addon' : ''
+                                                                                                                                        }` +
+                                                                                                                                      ` ${obj_input?.['required'] ? 'required' : ''}`}>{obj_input['label']}</Form.Label>
+                                                                                                                                      
+                                                                                                                <Form.Control type="text" className={`fit-modal-input-placeholder fit-input-text-theme-amber`}
+                                                                                                                                  style={{
+                                                                                                                                          backgroundColor: obj_input?.['style']?.['background_color'] ?? ''
+                                                                                                                                          , color: (objDisabled?.[obj_input?.['index']] ? 'grey' : '') // jika required dan disabled maka warna 'grey'
+                                                                                                                                  }}
+                                                                                                                                  placeholder={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']] ? '' : obj_input['placeholder']?.toString()} // jika disabled, maka placeholder di kosongkan
+                                                                                                                                  ref={inputRefs[obj_input?.['index']]}
+                                                                                                                                  onBlur={()=>funcBlurInput(obj_input?.['index'], obj_input)}
+                                                                                                                                  name={obj_input['name']}
+                                                                                                                                  maxLength={obj_input?.['max_length'] ?? -1}
+                                                                                                                                  disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
+                                                                                                                                  autoComplete={`off`}
+                                                                                                                                  autoCapitalize='off'
+                                                                                                                                  autoCorrect='off'
+                                                                                                                                  spellCheck='false'
+                                                                                                                                  onChange={(event)=>changeControl(obj_input?.['index'], obj_input?.['save']?.['key_name'], obj_input, event)}
+                                                                                                                                  />
+                                                                                                            </div>
                   
                                                                                                               {
                                                                                                                   obj_input?.['required'] &&
@@ -6546,63 +6622,101 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                   {
                                                                                                     obj_input['type'] === 'date' && (
                                                                                                       <Form.Group className={`mb-2`}>
-                                                                                                          <Form.Label className={`mb-1 fit-dash-modal-form-label`+
-                                                                                                                                  ` ${obj_input?.['required'] ? 'required' : ''}`}>{obj_input['label']}</Form.Label>
-                                                                                                                                  
-                                                                                                          <div className={`d-flex justify-content-start align-items-stretch ${styles['ppe-anly-datepicker-container']}`}>
 
-                                                                                                                  <DateRangeRounded className={`${styles['ppe-anly-datepicker-icon']}`}/>
+                                                                                                        
+                                                                                                          <div className={`${
+                                                                                                                            ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true) &&
+                                                                                                                            (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true)) 
+                                                                                                                                ? 'p-inputgroup':
+                                                                                                                            ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                              && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                              && !statusWindowMobile
+                                                                                                                            ) ? 'p-inputgroup' : ''
+                                                                                                                        }`}
 
-                                                                                                                  <div className={`d-flex align-items-stretch ppe-anly-datepicker-parent fit-input-date-theme-amber`}>
-                                                                                                                      <ReactDatePicker 
-                                                                                                                            ref={inputRefs[obj_input?.['index']]}
-                                                                                                                            // className={`${obj_input?.['index']}`}
-                                                                                                                            selected={objInputDate?.[obj_input?.['name']]}
-                                                                                                                            onChange={(date)=>dateChangePeriod(obj_input?.['save']?.['key_name'], obj_input?.['index'], obj_input, date)}
-                                                                                                                            dateFormat={`${obj_input?.['show']?.['format'] ?? `dd MMMM yyyy`}`}
-                                                                                                                            // startDate={startDate}
-                                                                                                                            // minDate={startDate}
-                                                                                                                            // title='End Date'
-                                                                                                                            // includeDateIntervals={[
-                                                                                                                            //   {start: subDays(new Date(),3), end: new Date()},
-                                                                                                                            //   {start: new Date(2024, 10, 1), end: new Date(2024,10,5)}
-                                                                                                                            // ]}
-                                                                                                                            // excludeDates={[new Date(), new Date(2024,10,23)]}
-                                                                                                                            maxDate={new Date(9999,11,31)}  // maksimal 12 desember 9999
-                                                                                                                            
-                                                                                                                            placeholderText={`${objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']] ? '' : obj_input?.['placeholder']}`}
-                                                                                                                            shouldCloseOnSelect={true}
-                                                                                                                            todayButton={`Today`}
-                                                                                                                            filterDate={(date: Date)=> {
-                                                                                                                                if (date.getDay() === 0) {
-                                                                                                                                  if (obj_input?.['disabled_days']?.['sunday']) 
-                                                                                                                                  {
-                                                                                                                                      return false;
-                                                                                                                                  }
-                                                                                                                                }
-                                                                                                                                else if (date.getDay() === 6) {
-                                                                                                                                  if (obj_input?.['disabled_days']?.['saturday']) 
-                                                                                                                                    {
-                                                                                                                                        return false;
+                                                                                                                style={{height: 
+                                                                                                                    ((typeof obj_input?.['style']?.input_group !== 'undefined' && obj_input?.['style']?.input_group?.enabled === true) &&
+                                                                                                                    (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true))
+                                                                                                                        ? 'auto':
+                                                                                                                    ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                              && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                              && !statusWindowMobile
+                                                                                                                    ) ? 'auto':''
+                                                                                                                }}
+                                                                                                            >
+                                                                                                                  
+                                                                                                              <Form.Label className={`mb-1 fit-dash-modal-form-label`+
+                                                                                                                                        ` ${
+                                                                                                                                            ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true) &&
+                                                                                                                                            (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true)) 
+                                                                                                                                                ? 'p-inputgroup-addon':
+                                                                                                                                            ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                                              && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                                              && !statusWindowMobile
+                                                                                                                                            ) ? 'p-inputgroup-addon' : ''
+                                                                                                                                        }` +
+                                                                                                                                      ` ${obj_input?.['required'] ? 'required' : ''}`}>{obj_input['label']}</Form.Label>
+
+
+                                                                                                              <div className={`d-flex justify-content-start align-items-stretch ${styles['ppe-anly-datepicker-container']} w-100`}>
+
+                                                                                                                      {/* <DateRangeRounded className={`${styles['ppe-anly-datepicker-icon']}`}/> */}
+                                                                                                                      <span className={`pi pi-calendar-clock ${styles['ppe-anly-datepicker-icon']}`}></span>
+
+                                                                                                                      <div className={`d-flex align-items-stretch ppe-anly-datepicker-parent fit-input-date-theme-amber`}>
+                                                                                                                          <ReactDatePicker 
+                                                                                                                                ref={inputRefs[obj_input?.['index']]}
+                                                                                                                                // className={`${obj_input?.['index']}`}
+                                                                                                                                selected={objInputDate?.[obj_input?.['name']]}
+                                                                                                                                onChange={(date)=>dateChangePeriod(obj_input?.['save']?.['key_name'], obj_input?.['index'], obj_input, date)}
+                                                                                                                                dateFormat={`${obj_input?.['show']?.['format'] ?? `dd MMMM yyyy`}`}
+                                                                                                                                // startDate={startDate}
+                                                                                                                                // minDate={startDate}
+                                                                                                                                // title='End Date'
+                                                                                                                                // includeDateIntervals={[
+                                                                                                                                //   {start: subDays(new Date(),3), end: new Date()},
+                                                                                                                                //   {start: new Date(2024, 10, 1), end: new Date(2024,10,5)}
+                                                                                                                                // ]}
+                                                                                                                                // excludeDates={[new Date(), new Date(2024,10,23)]}
+                                                                                                                                maxDate={new Date(9999,11,31)}  // maksimal 12 desember 9999
+                                                                                                                                
+                                                                                                                                placeholderText={`${objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']] ? '' : obj_input?.['placeholder']}`}
+                                                                                                                                shouldCloseOnSelect={true}
+                                                                                                                                todayButton={`Today`}
+                                                                                                                                filterDate={(date: Date)=> {
+                                                                                                                                    if (date.getDay() === 0) {
+                                                                                                                                      if (obj_input?.['disabled_days']?.['sunday']) 
+                                                                                                                                      {
+                                                                                                                                          return false;
+                                                                                                                                      }
                                                                                                                                     }
-                                                                                                                                }
-                                                                                                                                return true;
-                                                                                                                                // obj_input?.['disabled']?.['sunday'] ? date.getDay() !== 0 : true
-                                                                                                                                // 0 -> Minggu, 6 -> Sabtu
-                                                                                                                            }}
-                                                                                                                            // renderDayContents={(day, date)=><div>{day}</div>}
-                                                                                                                            onBlur={()=>funcBlurInput(obj_input?.['index'], obj_input)}
-                                                                                                                            showMonthDropdown
-                                                                                                                            showYearDropdown
-                                                                                                                            showMonthYearPicker={obj_input?.['show']?.['month_year_picker'] ?? false}
-                                                                                                                            disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
-                                                                                                                            // showDisabledMonthNavigation
-                                                                                                                      />
+                                                                                                                                    else if (date.getDay() === 6) {
+                                                                                                                                      if (obj_input?.['disabled_days']?.['saturday']) 
+                                                                                                                                        {
+                                                                                                                                            return false;
+                                                                                                                                        }
+                                                                                                                                    }
+                                                                                                                                    return true;
+                                                                                                                                    // obj_input?.['disabled']?.['sunday'] ? date.getDay() !== 0 : true
+                                                                                                                                    // 0 -> Minggu, 6 -> Sabtu
+                                                                                                                                }}
+                                                                                                                                // renderDayContents={(day, date)=><div>{day}</div>}
+                                                                                                                                onBlur={()=>funcBlurInput(obj_input?.['index'], obj_input)}
+                                                                                                                                showMonthDropdown
+                                                                                                                                showYearDropdown
+                                                                                                                                showMonthYearPicker={obj_input?.['show']?.['month_year_picker'] ?? false}
+                                                                                                                                disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
+                                                                                                                                // showDisabledMonthNavigation
+                                                                                                                          />
 
 
-                                                                                                                  </div>
+                                                                                                                      </div>
+                                                                                                              </div>
 
                                                                                                           </div>
+                                                                                                                          
+                                                                                                          
+                                                                                                                                  
                                                                                                           {
                                                                                                               obj_input?.['required'] &&
                                                                                                               invalidInput?.[obj_input?.['index']] && (
@@ -6671,31 +6785,85 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                   {
                                                                                                         obj_input['type'] === 'multi-select' && (
                                                                                                           <Form.Group className={`mb-2`}>
-                                                                                                              <Form.Label className={`mb-1 fit-dash-modal-form-label`+
-                                                                                                                                      ` ${obj_input?.['required'] ? 'required' : ''}`}>{obj_input['label']}</Form.Label>
-                                                                                                              <div>
-                                                                                                                  <MultiSelect
-                                                                                                                      ref={inputRefs[obj_input?.['index']]}
-                                                                                                                      options={objDataMultiSelect?.[obj_input?.['index']]}
-                                                                                                                      value={objSelected_MultiSelect?.[obj_input?.['index']] || []}
-                                                                                                                      onChange={(event)=>changeControl(obj_input?.['index'], obj_input?.['save']?.['key_name'], obj_input, event)}
-                                                                                                                      optionLabel='name'  // yang tampil di item 'id' atau 'name'
-                                                                                                                      disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
-                                                                                                                      filter
-                                                                                                                      showClear
-                                                                                                                      loading={false}
-                                                                                                                      resetFilterOnHide   // reset filter ketika sudah hide
-                                                                                                                      className='w-100 fit-custom-multiselect-prime' //custom-multiselect-prime
-                                                                                                                      showSelectAll={obj_input?.['select_item_type'] === 'multiple' ? true : false}
-                                                                                                                      maxSelectedLabels={3} // setelah 3 akan di rekap '3 items selected'
-                                                                                                                      placeholder={`${objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']] ? '' : obj_input?.['placeholder']}`}
-                                                                                                                      style={{height:'37.78px'
-                                                                                                                              , padding: '2px 0px'
-                                                                                                                            // , minWidth:'40px', maxWidth:'250px'
-                                                                                                                            // , lineHeight:'5px'
-                                                                                                                          }}
-                                                                                                                  />
+
+                                                                                                              <div className={`${
+                                                                                                                            ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true) &&
+                                                                                                                            (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true)) 
+                                                                                                                                ? 'p-inputgroup':
+                                                                                                                            ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                              && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                              && !statusWindowMobile
+                                                                                                                            ) ? 'p-inputgroup' : ''
+                                                                                                                        }`}
+
+                                                                                                                  style={{height: 
+                                                                                                                      ((typeof obj_input?.['style']?.input_group !== 'undefined' && obj_input?.['style']?.input_group?.enabled === true) &&
+                                                                                                                      (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true))
+                                                                                                                          ? 'auto':
+                                                                                                                      ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                                && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                                && !statusWindowMobile
+                                                                                                                      ) ? 'auto':''
+                                                                                                                  }}
+                                                                                                              >
+
+                                                                                                                  <Form.Label className={`mb-1 fit-dash-modal-form-label`+
+                                                                                                                                          ` ${
+                                                                                                                                                ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true) &&
+                                                                                                                                                (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true)) 
+                                                                                                                                                    ? 'p-inputgroup-addon':
+                                                                                                                                                ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                                                  && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                                                  && !statusWindowMobile
+                                                                                                                                                ) ? 'p-inputgroup-addon' : ''
+                                                                                                                                            }` +
+                                                                                                                                          ` ${obj_input?.['required'] ? 'required' : ''}`}>{obj_input['label']}</Form.Label>
+                                                                                                                
+                                                                                                                    
+                                                                                                                  <div className='w-100'>
+                                                                                                                      <MultiSelect
+                                                                                                                          ref={inputRefs[obj_input?.['index']]}
+                                                                                                                          options={objDataMultiSelect?.[obj_input?.['index']]}
+                                                                                                                          value={objSelected_MultiSelect?.[obj_input?.['index']] || []}
+                                                                                                                          onChange={(event)=>changeControl(obj_input?.['index'], obj_input?.['save']?.['key_name'], obj_input, event)}
+                                                                                                                          optionLabel='name'  // yang tampil di item 'id' atau 'name'
+                                                                                                                          disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
+                                                                                                                          filter
+                                                                                                                          showClear
+                                                                                                                          loading={false}
+                                                                                                                          resetFilterOnHide   // reset filter ketika sudah hide
+                                                                                                                          className='w-100 fit-custom-multiselect-prime d-flex align-items-center' //custom-multiselect-prime
+                                                                                                                          showSelectAll={obj_input?.['select_item_type'] === 'multiple' ? true : false}
+                                                                                                                          maxSelectedLabels={3} // setelah 3 akan di rekap '3 items selected'
+                                                                                                                          placeholder={`${objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']] ? '' : obj_input?.['placeholder']}`}
+                                                                                                                          style={{
+                                                                                                                                  // height:'37.78px'
+                                                                                                                                  height: 
+                                                                                                                                          ((typeof obj_input?.['style']?.input_group !== 'undefined' && obj_input?.['style']?.input_group?.enabled === true) &&
+                                                                                                                                          (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true))
+                                                                                                                                              ? '100%':
+                                                                                                                                          ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                                                    && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                                                    && !statusWindowMobile
+                                                                                                                                          ) ? '100%':'37.78px'
+                                                                                                                                  ,borderRadius: 
+                                                                                                                                          ((typeof obj_input?.['style']?.input_group !== 'undefined' && obj_input?.['style']?.input_group?.enabled === true) &&
+                                                                                                                                          (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true))
+                                                                                                                                              ? '0 0.375em 0.375em 0':
+                                                                                                                                          ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                                                    && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                                                    && !statusWindowMobile
+                                                                                                                                          ) ? '0 0.375em 0.375em 0':''
+                                                                                                                                  
+                                                                                                                                  , padding: '2px 0px'
+                                                                                                                                // , minWidth:'40px', maxWidth:'250px'
+                                                                                                                                // , lineHeight:'5px'
+                                                                                                                              }}
+                                                                                                                      />
+                                                                                                                  </div>
+
                                                                                                               </div>
+
                                                                                                               
                                                                                                               {
                                                                                                                   obj_input?.['required'] &&

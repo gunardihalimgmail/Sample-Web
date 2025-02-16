@@ -676,3 +676,26 @@
     transform: rotateY(0);
   }
 }
+
+// Style Input group
+.fit-section-input-cont {
+
+  // aktif atau tidak aktif untuk mobile, selama aktif inputgroup nya, maka aktif
+  .p-inputgroup {
+    
+      .p-inputgroup-addon{
+        margin-bottom:0 !important;
+        white-space: nowrap;
+        word-break: break-all;
+        min-width: auto;
+        display: flex;
+        align-items: center;
+      }
+  
+      input[type=text]{
+        border-radius: 0 0.375em 0.375em 0;
+      }
+
+  }
+}
+
