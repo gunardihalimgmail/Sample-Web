@@ -656,7 +656,7 @@ const TransaksiPenjualanForm = () => {
                                                 }
                                               },
                                               edit:{
-                                                key_name:'telepon'
+                                                key_name:'edit_telepon'
                                               },
                                               save:{
                                                 key_name:'telepon'
@@ -1283,7 +1283,7 @@ const TransaksiPenjualanForm = () => {
 
     setArrDataEdit({
         'nomor_faktur':'J-20241112-123-A879',
-        'telepon': '0561-12345678',
+        'edit_telepon': '0561-12345678',
         'tanggal': '2024-12-01',
         'keterangan': 'Kirim ke sanggau',
 
@@ -1362,10 +1362,10 @@ const TransaksiPenjualanForm = () => {
       formData.forEach((value, key)=>{
         console.log(key);
         if (typeof value === 'string'){
-          console.log(JSON.stringify(JSON.parse(value),null,2));
+          // console.log(JSON.stringify(JSON.parse(value),null,2));
         }
         else {
-          console.log(value)
+          // console.log(value)
         }
       })
     }

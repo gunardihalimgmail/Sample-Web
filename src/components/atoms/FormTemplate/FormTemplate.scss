@@ -193,6 +193,11 @@
   &.p-disabled {
     background-color: #ced6decf;
   }
+
+  .p-multiselect-label-container {
+    width:0;  // agar ukuran width container multi select tidak melebihi batas, terutama jika isi text nya panjang sekali
+  }
+
   // .p-multiselect-label-container {
   //   // text-overflow: ellipsis;
   //   width: 120px; // lebar agar ada jarak dengan icon clear

@@ -493,7 +493,10 @@ interface ParamLocal{
   status:'new'|'edit';
   edit_data?:any;
   inDataChange?:FormTemplateInDataChangeType;
-  outDataChange:(element:{data:any; posisi_name_input_when_onchange:string|null; status_proses:StatusProsesDataChangeType}, formData:FormData|null)=>void;  // formData khusus jika ada file upload terdeteksi
+
+  // data_with_key_edit : isi 'data change dari input' yang key dan format nya sesuai dengan kondisi 'edit' dan nama key dari 'edit -> key_name'
+  // ---- isi data nya harus nya sama dengan parameter 'data'
+  outDataChange:(element:{data:any; data_with_key_edit?:any; posisi_name_input_when_onchange:string|null; status_proses:StatusProsesDataChangeType}, formData:FormData|null)=>void;  // formData khusus jika ada file upload terdeteksi
 
   inConfirmDialog?:PropConfigConfirmDialogResponse;  
   outConfirmDialog?:PropConfigConfirmDialog; // konfirmasi delete atau lainnya jika ada dialog confirmation (user yang menentukan apa mau disetujui atau tidak)
@@ -651,6 +654,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
   // *** Output Perubahan Data
   const refDataChange = useRef<any>({});  // data terisi yang di parsing keluar
   const formDataRef = useRef<FormData|null>(null);  // Form Data : menyimpan semua perubahan data jika terdapat input type 'file'
+  const refDataEditChange = useRef<any>({});  // data berisi kondisi object edit (di buat seperti edit jika ada input change, tujuan utama nya untuk parsing data ke table)
 
   // Toast Message saat proses 'save' atau 'submit
   const toastProsesRef = useRef<any>(null);
@@ -2475,8 +2479,12 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
         setTimeout(()=>{
           outDataChange_StatusProses.current = 'process_out_change';
+
+          refDataEditChange.current = {
+              ...edit_data
+          }
   
-          outDataChange({data:{...refDataChange.current}, posisi_name_input_when_onchange:null, status_proses:'process_out_change'}, formDataRef.current);
+          outDataChange({data:{...refDataChange.current}, data_with_key_edit: {...refDataEditChange.current}, posisi_name_input_when_onchange:null, status_proses:'process_out_change'}, formDataRef.current);
         },200)
         // alert(JSON.stringify(refDataChange.current))
       }
@@ -3163,6 +3171,14 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                 [save_key_name]: value_input === "" ? null : value_input
               }
 
+              let edit_keyname = obj_input?.edit?.key_name;
+              if (typeof edit_keyname !== 'undefined'){
+                refDataEditChange.current = {
+                  ...refDataEditChange.current,
+                  [edit_keyname]: value_input === "" ? null : value_input
+                }
+              }
+
               if (statusConfigFileUpload.current === true)
               {
                 setDataToFormData('data', refDataChange.current);
@@ -3172,6 +3188,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               outDataChange_StatusProses.current = 'process_out_change';
               
               outDataChange({data:{...refDataChange.current},
+                            data_with_key_edit:{...refDataEditChange.current},
                             posisi_name_input_when_onchange: obj_input?.['name'],
                             status_proses:'process_out_change'}
                           ,formDataRef.current)
@@ -3210,6 +3227,14 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                 [save_key_name]: save_output === "" ? null : save_output
               }
 
+              let edit_keyname = obj_input?.edit?.key_name;
+              if (typeof edit_keyname !== 'undefined'){
+                refDataEditChange.current = {
+                  ...refDataEditChange.current,
+                  [edit_keyname]: save_output === "" ? null : save_output
+                }
+              }
+
               if (statusConfigFileUpload.current === true)
               {
                 setDataToFormData('data', refDataChange.current);
@@ -3219,6 +3244,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               outDataChange_StatusProses.current = 'process_out_change';
               
               outDataChange({data:{...refDataChange.current},
+                            data_with_key_edit:{...refDataEditChange.current},
                             posisi_name_input_when_onchange: obj_input?.['name'],
                             status_proses:'process_out_change'}
                           ,formDataRef.current)
@@ -3241,27 +3267,47 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               let save_output:string[]|string|null = null;
               const save_format_type = obj_input?.['save']?.['format']?.['type'];
 
+              let edit_value:string|null = null;  // untuk parsing ke posisi edit (khusus untuk modal table)
+
               if (typeof save_format_type !== 'undefined' && save_format_type !== null) {
                 if (save_format_type === 'array'){
                     save_output = [...value_input];
-                    if (save_output.length === 0){save_output = null}
+                    if (save_output.length === 0){
+                          save_output = null;
+                          edit_value = null;
+                    } else {
+                      edit_value = save_output.join(','); // jadikan string (eg: 'good,better')
+                    }
                 }
                 else if (save_format_type === 'string') {
                   const save_format_join_sep = obj_input?.['save']?.['format']?.['join_separator'];
                   save_output = value_input.join(save_format_join_sep);
                   if (save_output === ""){
                     save_output = null;
+                    edit_value = null;
+                  }
+                  else {
+                    edit_value = value_input.join(save_format_join_sep);
                   }
                 }
               }
               else {
                 save_output = null;
+                edit_value = null;
               }
 
               // simpan secara global pada form template
               refDataChange.current = {
                 ...refDataChange.current,
                 [save_key_name]: save_output ?? null
+              }
+
+              let edit_keyname = obj_input?.edit?.key_name;
+              if (typeof edit_keyname !== 'undefined'){
+                refDataEditChange.current = {
+                  ...refDataEditChange.current,
+                  [edit_keyname]: edit_value ?? null
+                }
               }
 
               if (statusConfigFileUpload.current === true)
@@ -3273,6 +3319,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               outDataChange_StatusProses.current = 'process_out_change';
               
               outDataChange({data:{...refDataChange.current},
+                            data_with_key_edit:{...refDataEditChange.current},
                             posisi_name_input_when_onchange: obj_input?.['name'],
                             status_proses:'process_out_change'}
                           ,formDataRef.current)
@@ -3298,6 +3345,14 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                 [save_key_name]: value_conv
               }
 
+              let edit_keyname = obj_input?.edit?.key_name;
+              if (typeof edit_keyname !== 'undefined'){
+                refDataEditChange.current = {
+                  ...refDataEditChange.current,
+                  [edit_keyname]: value_conv
+                }
+              }
+
               value_toState = value_conv;
 
             }
@@ -3306,6 +3361,16 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                 ...refDataChange.current,
                 [save_key_name]: null
               }
+
+              let edit_keyname = obj_input?.edit?.key_name;
+              if (typeof edit_keyname !== 'undefined')
+              {
+                refDataEditChange.current = {
+                  ...refDataEditChange.current,
+                  [edit_keyname]: null
+                }
+              }
+              
               value_toState = null;
             }
 
@@ -3326,6 +3391,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
             outDataChange_StatusProses.current = 'process_out_change';
               
             outDataChange({data:{...refDataChange.current},
+                          data_with_key_edit:{...refDataEditChange.current},
                           posisi_name_input_when_onchange: obj_input?.['name'],
                           status_proses:'process_out_change'}
                         ,formDataRef.current)
@@ -3338,11 +3404,14 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
   
               let objSelected:any = [];
               let objSelected_Id:any = null;  // ambil id nya saja
+              let objSelected_Name:any = null;  // ambil name (untuk refDataEditChange)
               if (event.value.length >= 1) {
 
                   if (obj_input?.['select_item_type'] === 'single'){
+
                     objSelected = [{...event.value[event.value.length-1]}];
                     objSelected_Id = objSelected[0]?.['id'] ?? null;
+                    objSelected_Name = objSelected[0]?.['name'] ?? null;
                   }
                   else if (obj_input?.['select_item_type'] === 'multiple')
                   {
@@ -3351,10 +3420,12 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                     if (event.value.length > 1){
                       // jika lebih dari satu, maka output nya array ['Male','Female']
                       objSelected_Id = objSelected.map(item=>item?.['id']) ?? null;
+                      objSelected_Name = objSelected.map(item=>item?.['name']) ?? null;
                     }
                     else if (event.value.length === 1){
                       // jika hanya satu, maka output nya string 'Male'
                       objSelected_Id = objSelected?.[0]?.['id'] ?? null;
+                      objSelected_Name = objSelected?.[0]?.['name'] ?? null;
                     }
                     
                   }
@@ -3368,6 +3439,31 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               refDataChange.current = {
                 ...refDataChange.current,
                 [save_key_name]: objSelected_Id
+              }
+
+              if (obj_input?.type === 'multi-select')
+              {
+                  let edit_keyname = obj_input?.edit?.key_name;
+                  let edit_keyvalue = obj_input?.edit?.key_value;
+                  
+                  if (typeof edit_keyname !== 'undefined' && 
+                        typeof edit_keyvalue !== 'undefined')
+                  {
+                    if (edit_keyname === edit_keyvalue)
+                    {
+                        // jika nama key 'name' dan 'value' sama, maka hanya pakai satu key 'name' saja
+                        refDataEditChange.current = {...refDataEditChange.current,
+                                [edit_keyname]: objSelected_Id  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                        }
+                    }
+                    else {
+                        // kondisi nama key 'name' dan 'value' berbeda, maka buat dua key dalam object
+                        refDataEditChange.current = {...refDataEditChange.current,
+                          [edit_keyname]: objSelected_Id,  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                          [edit_keyvalue]: objSelected_Name  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                        }
+                    }
+                  }
               }
 
               if (statusConfigFileUpload.current === true)
@@ -3395,6 +3491,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               outDataChange_StatusProses.current = 'process_out_change';
 
               outDataChange({data:{...refDataChange.current},
+                data_with_key_edit:{...refDataEditChange.current},
                 posisi_name_input_when_onchange: obj_input?.['name'],
                 status_proses:'process_out_change'}
               ,formDataRef.current)
@@ -3410,6 +3507,15 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               refDataChange.current = {
                 ...refDataChange.current,
                 [save_key_name]: value_input === "" ? null : value_input
+              }
+
+              let edit_keyname = obj_input?.edit?.key_name;
+              if (typeof edit_keyname !== 'undefined')
+              {
+                refDataEditChange.current = {
+                  ...refDataEditChange.current,
+                  [edit_keyname]: value_input === "" ? null : value_input
+                }
               }
 
               if (statusConfigFileUpload.current === true)
@@ -3428,6 +3534,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               outDataChange_StatusProses.current = 'process_out_change';
               
               outDataChange({data:{...refDataChange.current},
+                            data_with_key_edit:{...refDataEditChange.current},
                             posisi_name_input_when_onchange: obj_input?.['name'],
                             status_proses:'process_out_change'}
                           ,formDataRef.current)
@@ -3443,6 +3550,15 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               refDataChange.current = {
                 ...refDataChange.current,
                 [save_key_name]: value_input
+              }
+
+              let edit_keyname = obj_input?.edit?.key_name;
+              if (typeof edit_keyname !== 'undefined')
+              {
+                refDataEditChange.current = {
+                  ...refDataEditChange.current,
+                  [edit_keyname]: value_input
+                }
               }
 
               if (statusConfigFileUpload.current === true)
@@ -3461,6 +3577,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               outDataChange_StatusProses.current = 'process_out_change';
               
               outDataChange({data:{...refDataChange.current},
+                            data_with_key_edit:{...refDataEditChange.current},
                             posisi_name_input_when_onchange: obj_input?.['name'],
                             status_proses:'process_out_change'}
                           ,formDataRef.current)
@@ -3974,7 +4091,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
   }
 
-  const dateChangePeriod = (savekeyname, index, obj_input, date) => {
+  const dateChangePeriod = (savekeyname, index, obj_input:FormTemplateDataInputType, date) => {
     
       // let isDateTemp = checkIsDateFormat('31 aug 2024', 'dd MMMM yyyy');
       // console.log(isDateTemp)
@@ -3987,11 +4104,35 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
         [savekeyname]: date != null && date != "" ? format(date, obj_input?.['save']?.['format']) : null
       }
 
+      const edit_keyname = obj_input?.edit?.key_name;
+      let edit_value:string|null = null;
+
+      let edit_format = '';
+      if (obj_input?.type === 'date'){
+
+        edit_format = obj_input?.edit?.format ?? '';
+
+        if (edit_format !== ''){
+
+            edit_value = format(date, edit_format);
+
+            if (typeof edit_keyname !== 'undefined')
+            {
+              refDataEditChange.current = {
+                ...refDataEditChange.current,
+                [edit_keyname]: date != null && date != "" ? format(date, edit_format) : null
+              }
+            }
+        }
+      }
+
+
       // broadcast keluar form
 
       outDataChange_StatusProses.current = 'process_out_change';
 
       outDataChange({data:{...refDataChange.current},
+        data_with_key_edit:{...refDataEditChange.current},
         posisi_name_input_when_onchange: obj_input?.['name'],
         status_proses:'process_out_change'}
       ,formDataRef.current)
@@ -6819,48 +6960,52 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                                                             }` +
                                                                                                                                           ` ${obj_input?.['required'] ? 'required' : ''}`}>{obj_input['label']}</Form.Label>
                                                                                                                 
-                                                                                                                    
                                                                                                                   <div className='w-100'>
-                                                                                                                      <MultiSelect
-                                                                                                                          ref={inputRefs[obj_input?.['index']]}
-                                                                                                                          options={objDataMultiSelect?.[obj_input?.['index']]}
-                                                                                                                          value={objSelected_MultiSelect?.[obj_input?.['index']] || []}
-                                                                                                                          onChange={(event)=>changeControl(obj_input?.['index'], obj_input?.['save']?.['key_name'], obj_input, event)}
-                                                                                                                          optionLabel='name'  // yang tampil di item 'id' atau 'name'
-                                                                                                                          disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
-                                                                                                                          filter
-                                                                                                                          showClear
-                                                                                                                          loading={false}
-                                                                                                                          resetFilterOnHide   // reset filter ketika sudah hide
-                                                                                                                          className='w-100 fit-custom-multiselect-prime d-flex align-items-center' //custom-multiselect-prime
-                                                                                                                          showSelectAll={obj_input?.['select_item_type'] === 'multiple' ? true : false}
-                                                                                                                          maxSelectedLabels={3} // setelah 3 akan di rekap '3 items selected'
-                                                                                                                          placeholder={`${objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']] ? '' : obj_input?.['placeholder']}`}
-                                                                                                                          style={{
-                                                                                                                                  // height:'37.78px'
-                                                                                                                                  height: 
-                                                                                                                                          ((typeof obj_input?.['style']?.input_group !== 'undefined' && obj_input?.['style']?.input_group?.enabled === true) &&
-                                                                                                                                          (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true))
-                                                                                                                                              ? '100%':
-                                                                                                                                          ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
-                                                                                                                                                    && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
-                                                                                                                                                    && !statusWindowMobile
-                                                                                                                                          ) ? '100%':'37.78px'
-                                                                                                                                  ,borderRadius: 
-                                                                                                                                          ((typeof obj_input?.['style']?.input_group !== 'undefined' && obj_input?.['style']?.input_group?.enabled === true) &&
-                                                                                                                                          (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true))
-                                                                                                                                              ? '0 0.375em 0.375em 0':
-                                                                                                                                          ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
-                                                                                                                                                    && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
-                                                                                                                                                    && !statusWindowMobile
-                                                                                                                                          ) ? '0 0.375em 0.375em 0':''
-                                                                                                                                  
-                                                                                                                                  , padding: '2px 0px'
-                                                                                                                                // , minWidth:'40px', maxWidth:'250px'
-                                                                                                                                // , lineHeight:'5px'
-                                                                                                                              }}
-                                                                                                                      />
+                                                                                                                          
+                                                                                                                              <MultiSelect
+                                                                                                                                  ref={inputRefs[obj_input?.['index']]}
+                                                                                                                                  options={objDataMultiSelect?.[obj_input?.['index']]}
+                                                                                                                                  value={objSelected_MultiSelect?.[obj_input?.['index']] || []}
+                                                                                                                                  onChange={(event)=>changeControl(obj_input?.['index'], obj_input?.['save']?.['key_name'], obj_input, event)}
+                                                                                                                                  optionLabel='name'  // yang tampil di item 'id' atau 'name'
+                                                                                                                                  disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
+                                                                                                                                  filter
+                                                                                                                                  showClear
+                                                                                                                                  loading={false}
+                                                                                                                                  resetFilterOnHide   // reset filter ketika sudah hide
+                                                                                                                                  className='w-100 fit-custom-multiselect-prime d-flex align-items-center' //custom-multiselect-prime
+                                                                                                                                  showSelectAll={obj_input?.['select_item_type'] === 'multiple' ? true : false}
+                                                                                                                                  maxSelectedLabels={3} // setelah 3 akan di rekap '3 items selected'
+                                                                                                                                  placeholder={`${objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']] ? '' : obj_input?.['placeholder']}`}
+                                                                                                                                  style={{
+                                                                                                                                          // height:'37.78px'
+                                                                                                                                          height: 
+                                                                                                                                                  ((typeof obj_input?.['style']?.input_group !== 'undefined' && obj_input?.['style']?.input_group?.enabled === true) &&
+                                                                                                                                                  (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true))
+                                                                                                                                                      ? '100%':
+                                                                                                                                                  ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                                                            && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                                                            && !statusWindowMobile
+                                                                                                                                                  ) ? '100%':'37.78px'
+                                                                                                                                          ,borderRadius: 
+                                                                                                                                                  ((typeof obj_input?.['style']?.input_group !== 'undefined' && obj_input?.['style']?.input_group?.enabled === true) &&
+                                                                                                                                                  (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true))
+                                                                                                                                                      ? '0 0.375em 0.375em 0':
+                                                                                                                                                  ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true)
+                                                                                                                                                            && (typeof obj_input?.style?.input_group?.display?.mobile === 'undefined' || obj_input?.style?.input_group?.display?.mobile === false) 
+                                                                                                                                                            && !statusWindowMobile
+                                                                                                                                                  ) ? '0 0.375em 0.375em 0':''
+                                                                                                                                          
+                                                                                                                                          , padding: '2px 0px'
+
+                                                                                                                                        // , minWidth:'40px', maxWidth:'250px'
+                                                                                                                                        // , lineHeight:'5px'
+                                                                                                                                      }}
+                                                                                                                              />
+
                                                                                                                   </div>
+                                                                                                                    
+                                                                                                                  
 
                                                                                                               </div>
 
