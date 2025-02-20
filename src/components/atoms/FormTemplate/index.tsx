@@ -4876,6 +4876,17 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               let save_key_file_type = obj_input?.['save']?.['obj_props']?.['key_file_type'];
               let save_key_file_status = obj_input?.['save']?.['obj_props']?.['key_file_status'];
               let save_key_file_size_unit = obj_input?.['save']?.['obj_props']?.['key_file_size_unit']; // B, KB, GB
+
+          // *** Nama Versi Edit
+          let edit_key_status = obj_input?.edit;  // apakah ada key edit
+            let edit_key_name:any = obj_input?.edit?.key_name;
+            let edit_props_id:any = obj_input?.edit?.obj_props?.id;
+            let edit_props_name:any = obj_input?.edit?.obj_props?.file_name;
+            let edit_props_size:any = obj_input?.edit?.obj_props?.file_size;
+            let edit_props_type:any = obj_input?.edit?.obj_props?.file_type;
+            let edit_props_unit:any = obj_input?.edit?.obj_props?.file_unit;
+            let edit_props_url:any = obj_input?.edit?.obj_props?.file_url;
+              
       
           // ** Edit
           let edit_value_file_id = refDataChange.current?.[save_key_name]?.[save_key_file_id] ?? null;
@@ -4904,7 +4915,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
             }
           }
 
-          reader.onloadend = () => {
+          reader.onloadend = async() => {
       
               let file_show_result:any; // variabel source file (image) yang akan di tampilkan 
               
@@ -4928,6 +4939,16 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                     }
                   }
               }
+
+              let edit_objectURL:any = null;
+              if (file_show_result !== null)
+              {
+                  const response = await fetch(file_show_result);
+                  const blob = await response.blob();
+                  let file_temp:File = new File([blob], file.name, {type: file.type});
+                  edit_objectURL = URL.createObjectURL(file_temp);
+              }
+
 
               // *** Pakai UUID v7 (Order Sort)
       
@@ -4953,6 +4974,22 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                       , [save_key_file_size_unit]: obj_size?.unit ?? null
                                       , [save_key_file_status]: edit_value_file_id !== null && edit_value_file_id !== '' ? 'UPDATE' : 'NEW'
                                   }
+                  }
+
+                  if (typeof edit_key_status !== 'undefined')
+                  {
+                      refDataEditChange.current = {
+                          ...refDataEditChange.current,
+                          [edit_key_name]:{
+                                      ...refDataChange.current?.[edit_key_name]
+                                      , [edit_props_id]:edit_value_file_id
+                                      , [edit_props_name]: file.name
+                                      , [edit_props_type]: file?.type
+                                      , [edit_props_size]: obj_size?.size ?? null
+                                      , [edit_props_unit]: obj_size?.unit ?? null
+                                      , [edit_props_url]: edit_objectURL ?? null
+                          }
+                      }
                   }
       
                   formDataRef.current = new FormData();
@@ -5002,13 +5039,32 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                       , [save_key_file_status]: edit_value_file_id !== null && edit_value_file_id !== '' ? 'UPDATE' : 'NEW'
                                     }
                   }
+
+                  if (typeof edit_key_status !== 'undefined')
+                  {
+                      refDataEditChange.current = {
+                          ...refDataEditChange.current,
+                          [edit_key_name]:{
+                                      ...refDataChange.current?.[edit_key_name]
+                                      , [edit_props_id]:edit_value_file_id
+                                      , [edit_props_name]: file.name
+                                      , [edit_props_type]: file?.type
+                                      , [edit_props_size]: obj_size?.size ?? null
+                                      , [edit_props_unit]: obj_size?.unit ?? null
+                                      , [edit_props_url]: edit_objectURL ?? null
+                          }
+                      }
+                  }
       
                   formDataRef.current.set('data', JSON.stringify(refDataChange.current));
                   formDataRef.current.set(generateUUID, file);
               }
       
               outDataChange_StatusProses.current = 'process_out_change';
-              outDataChange({data:{...refDataChange.current}, posisi_name_input_when_onchange: obj_input?.['name'], status_proses:'process_out_change'}, formDataRef.current);
+              outDataChange({data:{...refDataChange.current}, 
+                          data_with_key_edit:{...refDataEditChange.current},
+                          posisi_name_input_when_onchange: obj_input?.['name'], 
+                          status_proses:'process_out_change'}, formDataRef.current);
       
       
               if (formDataRef.current !== null) {
@@ -5082,7 +5138,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
   }
 
-  const deleteUploadSingleFileHandler = (index, obj_input) => {
+  const deleteUploadSingleFileHandler = (index, obj_input:FormTemplateDataInputType) => {
     if (index !== -1){
 
       const disabled_input = objDisabled?.[obj_input?.['index']];
@@ -5093,6 +5149,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
       }
 
       let save_key_name = obj_input?.['save']?.['key_name'];
+      
           let save_key_file_id = obj_input?.['save']?.['obj_props']?.['key_file_id']; // nama key contoh 'id' (id dari edit_data)
           let save_key_file_cid = obj_input?.['save']?.['obj_props']?.['key_file_cid']; // nama key contoh 'cid' (id file berjalan)
           let save_key_file_name = obj_input?.['save']?.['obj_props']?.['key_file_name']; 
@@ -5119,6 +5176,15 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
         
         // ** Status file gambar ini masih 'NEW' (bukan dari Edit jadi hapus permanen saja dari refDataChange)
         delete refDataChange.current?.[save_key_name];
+      }
+
+      // ** Hapus permanen key yang di delete untuk refDataChangeEdit (agar penampakannya tidak muncul di input)
+      let edit_key_name = obj_input?.edit?.key_name;
+      if (typeof edit_key_name !== 'undefined'){
+        if (typeof refDataEditChange.current?.[edit_key_name] !== 'undefined')
+        {
+            delete refDataEditChange.current?.[edit_key_name];
+        }
       }
 
       // * Clear dari show Image
@@ -5151,7 +5217,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
       }
 
       outDataChange_StatusProses.current = 'process_out_change';
-      outDataChange({data:{...refDataChange.current}, posisi_name_input_when_onchange: obj_input?.['name'], status_proses:'process_out_change'}, formDataRef.current);
+      outDataChange({data:{...refDataChange.current}, 
+                      data_with_key_edit:{...refDataEditChange.current},
+                      posisi_name_input_when_onchange: obj_input?.['name'], 
+                      status_proses:'process_out_change'}, formDataRef.current);
 
       console.log(refDataChange.current)
 
