@@ -4981,7 +4981,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                       refDataEditChange.current = {
                           ...refDataEditChange.current,
                           [edit_key_name]:{
-                                      ...refDataChange.current?.[edit_key_name]
+                                      ...refDataEditChange.current?.[edit_key_name]
                                       , [edit_props_id]:edit_value_file_id
                                       , [edit_props_name]: file.name
                                       , [edit_props_type]: file?.type
@@ -5045,7 +5045,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                       refDataEditChange.current = {
                           ...refDataEditChange.current,
                           [edit_key_name]:{
-                                      ...refDataChange.current?.[edit_key_name]
+                                      ...refDataEditChange.current?.[edit_key_name]
                                       , [edit_props_id]:edit_value_file_id
                                       , [edit_props_name]: file.name
                                       , [edit_props_type]: file?.type
@@ -5264,6 +5264,35 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               // * Kumpulkan semua files yang tidak bisa dihapus karena ada 'id' (edit_data)
               // ** Kemudian isi files nya di set lagi pakai 'setFiles'
 
+              
+              // Hapus dari refDataEditChange
+              const edit_key_name = obj_input?.edit?.key_name;
+
+              let temp_data_edit_change:any[] = [];
+              if (typeof edit_key_name !== 'undefined'){
+                  temp_data_edit_change = refDataEditChange.current?.[edit_key_name];  // array file
+              }
+              if (temp_data_edit_change.length > 0)
+              {
+                if (cid_item !== null)
+                {
+                  let findIdxIdinEdit = temp_data_edit_change.findIndex((val,idx)=>val?.['cid'] === cid_item);
+                  
+                  if (findIdxIdinEdit !== -1){
+                    temp_data_edit_change.splice(findIdxIdinEdit, 1)
+                  }
+                }
+                else if (id_item !== null)
+                {
+                  let findIdxIdinEdit = temp_data_edit_change.findIndex((val,idx)=>val?.['id'] === id_item);
+                  
+                  if (findIdxIdinEdit !== -1){
+                    temp_data_edit_change.splice(findIdxIdinEdit, 1)
+                  }
+                }
+              }
+              // ---
+
               if (cid_item !== null){
 
                 if (formDataRef.current && formDataRef.current !== null){
@@ -5376,7 +5405,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
             }
 
             outDataChange_StatusProses.current = 'process_out_change';
-            outDataChange({data:{...refDataChange.current}, posisi_name_input_when_onchange: obj_input?.['name'], status_proses:'process_out_change'}, formDataRef.current);
+            outDataChange({data:{...refDataChange.current}, 
+                          data_with_key_edit:{...refDataEditChange.current},
+                          posisi_name_input_when_onchange: obj_input?.['name'], 
+                          status_proses:'process_out_change'}, formDataRef.current);
     
           }
 
@@ -5418,7 +5450,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
     }
   }
   
-  const deleteUploadMultipleFileHandler = (file, props, obj_input) => {
+  const deleteUploadMultipleFileHandler = (file, props, obj_input:FormTemplateDataInputType) => {
 
       const total_size:string = objUploadSizeLimit?.[obj_input?.['name']]?.size_in_byte ?? '0';
 
@@ -5426,7 +5458,13 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
         if (formDataRef && formDataRef.current !== null){
 
           const save_key_name = obj_input?.['save']?.['key_name'];
+          const edit_key_name = obj_input?.edit?.key_name;
           
+          let temp_data_edit_change:any[] = [];
+          if (typeof edit_key_name !== 'undefined'){
+            temp_data_edit_change = refDataEditChange.current?.[edit_key_name];  // array file
+          }
+
           let temp_data_change = refDataChange.current?.[save_key_name];  // array file
 
           if (typeof temp_data_change !== 'undefined' && temp_data_change !== null && Array.isArray(temp_data_change)){
@@ -5453,6 +5491,17 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                   attr_key_selected_not_empty = 'cid'
                   attr_value_selected_not_empty = file_inlist_cid;
               }
+
+              // Hapus dari refDataEditChange
+              if (temp_data_edit_change.length > 0)
+              {
+                  let findIdxinEdit = temp_data_edit_change.findIndex((val,idx)=>val?.[attr_key_selected_not_empty] === attr_value_selected_not_empty);
+                  
+                  if (findIdxinEdit !== -1){
+                    temp_data_edit_change.splice(findIdxinEdit, 1)
+                  }
+              }
+              // ---
 
               // * Jika ada salah satu 'id' atau 'cid', maka di proses
 
@@ -5518,7 +5567,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                 }
 
                 outDataChange_StatusProses.current = 'process_out_change';
-                outDataChange({data:{...refDataChange.current}, posisi_name_input_when_onchange: obj_input?.['name'], status_proses:'process_out_change'}, formDataRef.current);
+                outDataChange({data:{...refDataChange.current}, 
+                              data_with_key_edit:{...refDataEditChange.current},
+                              posisi_name_input_when_onchange: obj_input?.['name'], 
+                              status_proses:'process_out_change'}, formDataRef.current);
   
 
                 setObjUploadSizeLimit((prev:any)=>{
@@ -6477,6 +6529,16 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               let save_key_file_type = obj_input?.['save']?.['obj_props']?.['key_file_type'];
               let save_key_file_status = obj_input?.['save']?.['obj_props']?.['key_file_status'];
               let save_key_file_size_unit = obj_input?.['save']?.['obj_props']?.['key_file_size_unit']; // B, KB, GB
+
+            // *** Nama Versi Edit
+            let edit_key_status = obj_input?.edit;  // apakah ada key edit
+              let edit_key_name:any = obj_input?.edit?.key_name;
+              let edit_props_id:any = obj_input?.edit?.obj_props?.id;
+              let edit_props_name:any = obj_input?.edit?.obj_props?.file_name;
+              let edit_props_size:any = obj_input?.edit?.obj_props?.file_size;
+              let edit_props_type:any = obj_input?.edit?.obj_props?.file_type;
+              let edit_props_unit:any = obj_input?.edit?.obj_props?.file_unit;
+              let edit_props_url:any = obj_input?.edit?.obj_props?.file_url;
       
               // *** Tambahan key value baru dalam files
             
@@ -6538,6 +6600,48 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                       }
   
                     }
+
+                    if (typeof edit_key_status !== 'undefined')
+                    {
+                        
+                        let edit_objectURL:any = null;
+                        edit_objectURL = URL.createObjectURL(file);
+                        
+                        if (typeof refDataEditChange.current?.[edit_key_name] !== 'undefined')
+                        {
+                            refDataEditChange.current = {
+                                ...refDataEditChange.current,
+                                [edit_key_name]:[
+                                            ...refDataEditChange.current?.[edit_key_name],
+                                            {
+                                                  [edit_props_id]: null // hanya sebagai pengenal id (untuk hapus)
+                                                  , ['cid']: generateUUID // hanya sebagai pengenal id (untuk hapus)
+                                                  , [edit_props_name]: file.name
+                                                  , [edit_props_type]: file?.type
+                                                  , [edit_props_size]: obj_size?.size ?? null
+                                                  , [edit_props_unit]: obj_size?.unit ?? null
+                                                  , [edit_props_url]: edit_objectURL ?? null
+                                            }
+                                ]
+                            }
+                        }
+                        else {
+                            refDataEditChange.current = {
+                                ...refDataEditChange.current,
+                                [edit_key_name]:[
+                                            {
+                                                  [edit_props_id]: null
+                                                  , ['cid']: generateUUID
+                                                  , [edit_props_name]: file.name
+                                                  , [edit_props_type]: file?.type
+                                                  , [edit_props_size]: obj_size?.size ?? null
+                                                  , [edit_props_unit]: obj_size?.unit ?? null
+                                                  , [edit_props_url]: edit_objectURL ?? null
+                                            }
+                                ]
+                            }
+                        }
+                    }
   
                     // *** Lanjut Simpan ke FormDataRef
                     // ---type here---
@@ -6574,7 +6678,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                     // }
 
                     outDataChange_StatusProses.current = 'process_out_change';
-                    outDataChange({data:{...refDataChange.current}, posisi_name_input_when_onchange: obj_input?.['name'], status_proses:'process_out_change'}, formDataRef.current);
+                    outDataChange({data:{...refDataChange.current}, 
+                                  data_with_key_edit:{...refDataEditChange.current},
+                                  posisi_name_input_when_onchange: obj_input?.['name'], 
+                                  status_proses:'process_out_change'}, formDataRef.current);
 
                   }
                 }
@@ -6614,7 +6721,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
   return (
     <div className={`fit-container`}>
-
+        
         {loading && (
             <div className={`d-flex justify-content-center align-items-center ${styles['fit-loading']}`}>
               <Bars width='80' height='80' visible={loading} color='#4fa94d'/>

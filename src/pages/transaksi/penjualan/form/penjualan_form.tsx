@@ -22,6 +22,9 @@ import CheckMarkAnimate from '../../../../components/atoms/FormTemplate/CheckMar
 import { IconField } from 'primereact/iconfield';
 
 
+
+
+
 const NestingMenu = (props:{arr_menu:any[], index:number, item:any|null}) => {
 
   const [objIsOpen, setObjIsOpen] = useState<{[key:string]:boolean}>({}); // by item_id
@@ -1617,6 +1620,7 @@ const TransaksiPenjualanForm = () => {
   }
 
 
+
   return (
     <div>
 
@@ -1768,6 +1772,7 @@ const TransaksiPenjualanForm = () => {
           statusDone && (
             
               <FormTemplate 
+              
                   props={propConfig} 
                   // props={propConfig} 
 
