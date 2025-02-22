@@ -2549,8 +2549,9 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                 let data_name = data?.['name'];
                 let data_value:any = data?.['value'];
 
-                let findConfigInput:any = arrConfigInputRef.current.find(v=>v?.['name'] === data_name);
+                let findConfigInput:FormTemplateDataInputType|null = arrConfigInputRef.current.find(v=>v?.['name'] === data_name) || null;
                 if (findConfigInput) {
+
                     let index_input = findConfigInput?.['index'];
                     let type_input = findConfigInput?.['type'];
                     let savekeyname_input = findConfigInput?.['save']?.['key_name'];
@@ -2558,11 +2559,20 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
                     if (inputRefs?.[index_input]) {
                       if (type_input === 'text') {
+                        
                         inputRefs[index_input].current.value = data_value;
 
                         refDataChange.current = {
                           ...refDataChange.current,
                           [savekeyname_input]: data_value
+                        }
+
+                        let edit_keyname = findConfigInput?.edit?.key_name;
+                        if (typeof edit_keyname !== 'undefined'){
+                          refDataEditChange.current = {
+                            ...refDataEditChange.current,
+                            [edit_keyname]: data_value === "" ? null : data_value
+                          }
                         }
 
                         // ** Handle Global Invalid Message
@@ -2591,6 +2601,14 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                             [savekeyname_input]: parseFloat(data_value)
                           }
 
+                          let edit_keyname = findConfigInput?.edit?.key_name;
+                          if (typeof edit_keyname !== 'undefined'){
+                            refDataEditChange.current = {
+                              ...refDataEditChange.current,
+                              [edit_keyname]: data_value === "" ? null : data_value
+                            }
+                          }
+
                           // ** Handle Global Invalid Message
                           if (data_value != null && data_value != ""){
                             // jika data ada, maka hapus dari invalid global
@@ -2607,14 +2625,19 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                             }
                           }
 
-                          // kumpulan input-an type 'number' by name
-                          setObjInputNumber(prev=>{
-                            return {
-                                ...prev,
-                                [findConfigInput?.['name']]: parseFloat(data_value)
-                            }
-                          });
+                          const config_name = findConfigInput?.name;
+                          if (typeof config_name !== 'undefined')
+                          {
+                            // kumpulan input-an type 'number' by name
+                            setObjInputNumber(prev=>{
+                              return {
+                                  ...prev,
+                                  [config_name]: parseFloat(data_value)
+                              }
+                            });
 
+                          }
+                          
                           status_change = true;
 
                         }
@@ -2634,8 +2657,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                   let data_name = data?.['name'];
                   let data_value:any = data?.['value'];
 
-                  let findConfigInput = {...arrConfigInputRef.current.find(v=>v?.['name'] === data_name)};
-                  if (findConfigInput && Object.keys(findConfigInput).length > 0) {
+                  // let findConfigInput = {...arrConfigInputRef.current.find(v=>v?.['name'] === data_name)};
+                  let findConfigInput:FormTemplateDataInputType|null = arrConfigInputRef.current.find(v=>v?.['name'] === data_name) || null;
+
+                  if (findConfigInput && findConfigInput !== null && Object.keys(findConfigInput).length > 0) {
 
                       let index_input = findConfigInput?.['index'];
                       let type_input = findConfigInput?.['type'];
@@ -2647,6 +2672,30 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                           refDataChange.current = {
                             ...refDataChange.current,
                             [savekeyname_input]: data_value != null && data_value != "" ? format(data_value, saveformat_input) : null
+                          }
+
+                          // * Simpan dalam bentuk Edit (untuk Modal)
+                          const edit_keyname = findConfigInput?.edit?.key_name;
+                          let edit_value:string|null = null;
+
+                          let edit_format = '';
+                          if (findConfigInput?.type === 'date'){
+
+                            edit_format = findConfigInput?.edit?.format ?? '';
+
+                            if (edit_format !== ''){
+                              if (data_value !== null && data_value !== "")
+                                {
+                                    edit_value = format(data_value, edit_format);
+                                    if (typeof edit_keyname !== 'undefined')
+                                    {
+                                      refDataEditChange.current = {
+                                        ...refDataEditChange.current,
+                                        [edit_keyname]: edit_value != null && edit_value != "" ? edit_value : null
+                                      }
+                                    }
+                                }
+                            }
                           }
 
                           // broadcast keluar form
@@ -2670,14 +2719,18 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                           }
 
                           
-
-                          // kumpulan input-an type 'date' by name
-                          setObjInputDate(prev=>{
-                            return {
-                                ...prev,
-                                [findConfigInput?.['name']]: data_value
-                            }
-                          });
+                          const config_name = findConfigInput?.name;
+                          if (typeof config_name !== 'undefined')
+                          {
+                            // kumpulan input-an type 'date' by name
+                            setObjInputDate(prev=>{
+                              return {
+                                  ...prev,
+                                  [config_name]: data_value
+                              }
+                            });
+                            
+                          }
 
                           status_change = true;
                       }
@@ -2697,9 +2750,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                       let data_name = data?.['name']; // name input
                       let data_value:any = data?.['value']; // berupa array baik satu atau lebih data, contoh: ['Male', 'Female']
 
-                      let findConfigInput:any = {...arrConfigInputRef.current.find(v=>v?.['name'] === data_name)};
+                      // let findConfigInput:any = {...arrConfigInputRef.current.find(v=>v?.['name'] === data_name)};
+                      let findConfigInput:FormTemplateDataInputType|null = arrConfigInputRef.current.find(v=>v?.['name'] === data_name) || null;
 
-                      if (findConfigInput && Object.keys(findConfigInput).length > 0) {
+                      if (findConfigInput && findConfigInput !== null && Object.keys(findConfigInput).length > 0) {
 
                           let afterFindConfigInput:FormTemplateDataInputType = {...findConfigInput}
 
@@ -2747,6 +2801,32 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                               ...refDataChange.current,
                                               [savekeyname_input]: value_id
                                             }
+
+                                            // * Update ke refDataEditChange (untuk Modal)
+                                            if (findConfigInput?.type === 'multi-select')
+                                            {
+                                                let edit_keyname = findConfigInput?.edit?.key_name;
+                                                let edit_keyvalue = findConfigInput?.edit?.key_value;
+                                                
+                                                if (typeof edit_keyname !== 'undefined' && 
+                                                      typeof edit_keyvalue !== 'undefined')
+                                                {
+                                                  if (edit_keyname === edit_keyvalue)
+                                                  {
+                                                      // jika nama key 'name' dan 'value' sama, maka hanya pakai satu key 'name' saja
+                                                      refDataEditChange.current = {...refDataEditChange.current,
+                                                              [edit_keyname]: findDataMaster[0]?.['id']  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                                                      }
+                                                  }
+                                                  else {
+                                                      // kondisi nama key 'name' dan 'value' berbeda, maka buat dua key dalam object
+                                                      refDataEditChange.current = {...refDataEditChange.current,
+                                                        [edit_keyname]: findDataMaster[0]?.['id'],  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                                                        [edit_keyvalue]: findDataMaster[0]?.['name']  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                                                      }
+                                                  }
+                                                }
+                                            }
         
                                             temp_objSelectedMultiSelect.current = {
                                                 ...temp_objSelectedMultiSelect.current,
@@ -2766,8 +2846,31 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                     let temp_refDataChange:any[] = [];
                                     let temp2_objSelectedMultiSelect:any[] = [];
 
+                                    // * Bersihkan data existing jika string, maka dibuat null
+                                    if (findConfigInput?.type === 'multi-select')
+                                    {
+                                        let edit_keyname = findConfigInput?.edit?.key_name;
+                                        let edit_keyvalue = findConfigInput?.edit?.key_value;
+                                        
+                                        // * Bersihkan data existing jika string, maka dibuat null
+                                        if (typeof edit_keyname !== 'undefined')
+                                        {
+                                          if (typeof refDataEditChange.current?.[edit_keyname] !== 'undefined')
+                                          {
+                                              refDataEditChange.current = {...refDataEditChange.current, [edit_keyname]:null}
+                                          }
+                                        }
+                                        if (typeof edit_keyvalue !== 'undefined')
+                                        {
+                                          if (typeof refDataEditChange.current?.[edit_keyvalue] !== 'undefined')
+                                          {
+                                              refDataEditChange.current = {...refDataEditChange.current, [edit_keyvalue]:null}
+                                          }
+                                        }
+                                    }
+                                    // -------------------
+                                    
                                     for (let value_id of temp_final_data){
-
                                         let findDataMaster_Merge:string = ''; // 'Male, Female'
                                         let findDataMaster:any = objDataMultiSelectRef.current?.[index_input].filter(item=>item?.['id'] === value_id);                                      
                                         if (findDataMaster.length > 0){
@@ -2786,6 +2889,79 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                               ...temp2_objSelectedMultiSelect, 
                                               {...findDataMaster[0]}
                                             ]
+
+                                            // * Update ke refDataEditChange (untuk Modal)
+
+                                            if (findConfigInput?.type === 'multi-select')
+                                            {
+                                                let edit_keyname = findConfigInput?.edit?.key_name;
+                                                let edit_keyvalue = findConfigInput?.edit?.key_value;
+                                                
+
+                                                if (typeof edit_keyname !== 'undefined' && 
+                                                      typeof edit_keyvalue !== 'undefined')
+                                                {
+                                                  if (edit_keyname === edit_keyvalue)
+                                                  {
+                                                      // jika nama key 'name' dan 'value' sama, maka hanya pakai satu key 'name' saja
+                                                      
+                                                      if (typeof refDataEditChange.current?.[edit_keyname] === 'undefined' 
+                                                            || refDataEditChange.current?.[edit_keyname] === null)
+                                                      {
+                                                        refDataEditChange.current = {...refDataEditChange.current,
+                                                                [edit_keyname]: [
+                                                                              findDataMaster[0]?.['id'],
+                                                                  ]  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                                                        }
+                                                      }
+                                                      else {
+
+                                                        refDataEditChange.current = {
+                                                                ...refDataEditChange.current,
+                                                                [edit_keyname]: [
+                                                                              ...refDataEditChange.current?.[edit_keyname],
+                                                                              findDataMaster[0]?.['id']
+                                                                  ]  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                                                        }
+                                                      }
+                                                      
+
+                                                  }
+                                                  else {
+
+                                                      // kondisi nama key 'name' dan 'value' berbeda, maka buat dua key dalam object
+                                                      
+                                                      // * key 'id'
+                                                      if (typeof refDataEditChange.current?.[edit_keyname] === 'undefined')
+                                                      {
+                                                          refDataEditChange.current = {...refDataEditChange.current,
+                                                            [edit_keyname]: [findDataMaster[0]?.['id']],  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                                                          }
+                                                      }
+                                                      else {
+                                                          refDataEditChange.current = {...refDataEditChange.current,
+                                                            [edit_keyname]: [...refDataEditChange.current?.[edit_keyname], findDataMaster[0]?.['id']],  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                                                          }
+                                                      }
+
+                                                      // kondisi nama key 'name' dan 'value' berbeda, maka buat dua key dalam object
+
+                                                      // * key 'name'
+                                                      if (typeof refDataEditChange.current?.[edit_keyvalue] === 'undefined')
+                                                      {
+                                                          refDataEditChange.current = {...refDataEditChange.current,
+                                                            [edit_keyvalue]: [findDataMaster[0]?.['name']],  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                                                          }
+                                                      }
+                                                      else {
+                                                          refDataEditChange.current = {...refDataEditChange.current,
+                                                            [edit_keyvalue]: [...refDataEditChange.current?.[edit_keyvalue], findDataMaster[0]?.['name']],  // bisa string ('1') atau array jika multiple (['1',2','3'])
+                                                          }
+                                                      }
+
+                                                  }
+                                                }
+                                            }
 
 
                                             if (globalInvalidInput.current?.[index_input]){
@@ -2850,7 +3026,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
             
         if (status_change) {
           outDataChange_StatusProses.current = 'not_enter_element';
-          outDataChange({data:{...refDataChange.current}, posisi_name_input_when_onchange:null, status_proses:'not_enter_element'}, formDataRef.current)
+          outDataChange({data:{...refDataChange.current}, 
+                        data_with_key_edit:{...refDataEditChange.current},
+                        posisi_name_input_when_onchange:null, 
+                        status_proses:'not_enter_element'}, formDataRef.current)
         }
       }
 
