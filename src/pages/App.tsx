@@ -7,12 +7,14 @@ import { bindActionCreators } from 'redux';
 import logo from '../assets/images/logo.svg';
 import { Route_custom } from '../config';
 import './App.css';
+import FormTemplateContextProv from '../components/atoms/FormTemplate/FormTemplateContext';
 
 function App() {
 
   return (
-
-      <Route_custom />
+      <FormTemplateContextProv>
+        <Route_custom />
+      </FormTemplateContextProv>
   );
 }
 

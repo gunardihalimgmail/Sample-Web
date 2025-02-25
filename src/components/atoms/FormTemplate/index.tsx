@@ -3,7 +3,7 @@ import Trend from 'react-trend';
 import styles from './FormTemplate.module.scss';
 import './FormTemplate.scss';
 import { v7 as uuidv7, v6 as uuidv6 } from 'uuid';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import {Button as ButtonPrime} from 'primereact/button';
 import {Toast} from 'primereact/toast';
 import { Message } from 'primereact/message';
@@ -35,6 +35,7 @@ import CheckMarkAnimate from './CheckMarkAnimate';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MaterialReactTable, MRT_Cell, MRT_ColumnDef } from 'material-react-table';
+import { FormTemplateContext, FormTemplateContextInterface } from './FormTemplateContext';
 // import { format } from 'date-fns';
 
 export type FormatDateFormTemplate = 'dd MMMM yyyy'|'yyyy-MM-dd';
@@ -397,10 +398,15 @@ type FormTemplate_DetailTable_CustomCell = {
   suffix?:{key:string};   // code label (eg. 'BTC' dari 'Bitcoin')
 }
 |{
-  type:'trend_line',
+  type:'trend_line';
   rules?:{
     comparison_start_end:boolean; // perbandingan nilai start dan end (jika nilai akhir > awal maka hijau, sebaliknya merah)
   }
+}
+|{
+  type:'actions'; // edit, custom actions, dst...
+  size?:number;  // ukuran width kolom
+  actions:Array<|{type:'custom_element_in_modal'; style?:{backgroundColorHover?:string}; icon:React.ReactElement}>
 }
 
 
@@ -505,6 +511,10 @@ interface ParamLocal{
 }
 
 const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_session, status, edit_data, inDataChange, outDataChange, inConfirmDialog, outConfirmDialog, ...rest}) => {
+
+  const {dataContext, setDataContext} = useContext<FormTemplateContextInterface>(FormTemplateContext);
+
+  
 
   // outDataChange -> output result to other form
 
@@ -672,6 +682,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
   const arrConfigDetailRef = useRef<{[name:string]:FormTemplate_Detail}>({});
 
   const [statusWindowMobile, setStatusWindowMobile] = useState<boolean>(false);
+
+  // *** Modal ***
+  // ---- {'uuid': {show:true}}
+  const [ modalProps, setModalProps ] = useState<{[uuid:string]:{show:boolean}}>({});
 
   useEffect(()=>{
     const windowFunc = () => {
@@ -992,12 +1006,27 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
           if (typeof temp_section?.detail !== 'undefined' && Array.isArray(temp_section?.detail))
           {
 
+
+              let modalprops_temp = {}; // temporary dari setModalProps, (eg: {'uuid':{show:true}})
+
               let section_detail = [...temp_section?.detail];
               if (section_detail.length > 0){
 
                   temp_section?.detail.forEach((temp_detail:FormTemplate_Detail, idx_detail)=>{
+
+                      const uuid_gen = uuidv7();
+                      // * id unik setiap detail
+                      temp_detail['uuid'] = uuid_gen;
+
+                      // simpan property modal detail by uuid
+                      if (typeof modalprops_temp?.['uuid'] === 'undefined'){
+                        modalprops_temp = {
+                            ...modalprops_temp,
+                            [uuid_gen]: {show: false}
+                        }
+                      }
     
-                    // simpan 'name' ke variabel untuk di cek duplikasi nya
+                      // simpan 'name' ke variabel untuk di cek duplikasi nya
                       if (temp_detail?.name){
                         arr_temp_name_in_detail = [
                           ...arr_temp_name_in_detail, 
@@ -1011,10 +1040,16 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                       }
                   });
 
+                  setModalProps({...modalprops_temp});
+                  // alert(JSON.stringify(modalprops_temp,null,2))
+
               }
 
           }
       })
+
+      console.error('---------------- TEMP CONFIG -------------')
+      console.error(temp_config)
 
 
       // * Check apakah duplikasi data 'name' pada detail,
@@ -1221,8 +1256,99 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                               if (typeof custom_cell !== 'undefined'){
 
                                 let cell_column: ({cell, column, row, table}:any) => JSX.Element;
+                                let mui_table_bodycell_props: ({cell, column, row, table}:any) => {sx:{}};
 
-                                if (custom_cell?.type === 'tag'){
+                                if (custom_cell?.type === 'actions'){
+
+                                    const arr_custom_cell_actions = custom_cell?.actions;
+                                    const custom_cell_size = custom_cell?.size;
+                                      
+                                    cell_column = ({cell, column}) => {
+                                      if (typeof arr_custom_cell_actions !== 'undefined')
+                                      {
+                                          return (
+                                            <div className='d-flex gap-2'>
+                                              {
+                                                arr_custom_cell_actions.map((item, index)=>{
+                                                  if (item?.type === 'custom_element_in_modal')
+                                                  {
+                                                    const uuid_style = uuidv7();
+                                                    return (
+                                                      <>
+                                                        <style>
+                                                        {
+                                                          `
+                                                            .fit-act-cust-ele-${uuid_style} { 
+                                                                  display: flex;+
+                                                                  align-items: center;
+                                                                  justify-content: center;
+                                                                  cursor:pointer;
+                                                                  border-radius:50%;
+
+                                                                  &:hover {
+                                                                    background-color:${item?.style?.backgroundColorHover ?? 'transparent'};
+                                                                    padding:5px;
+                                                                  }
+                                                            }
+                                                          `
+                                                        }
+                                                        </style>
+
+                                                        <span className={`fit-act-cust-ele-${uuid_style}`}>{item?.icon}</span>
+                                                      </>
+                                                    )
+                                                  }
+                                                })
+                                              }
+
+                                            </div>
+                                          )
+                                      }
+                                      else 
+                                      {
+                                          return <></>
+                                      }
+                                    }
+
+                                    mui_table_bodycell_props = ({cell, row, column}) => {
+                                      return {
+                                        sx:{
+                                            '&.MuiTableCell-root.MuiTableCell-body':{
+                                                display:'flex',
+                                                justifyContent:'center'
+                                          }
+                                        }
+                                      }
+                                    }
+
+                                    if (typeof custom_cell_size !== 'undefined')
+                                    {
+                                      obj_column_def_for_mui_table = {
+                                          ...obj_column_def_for_mui_table,
+                                          size: custom_cell_size
+                                      }
+                                    }
+
+                                    obj_column_def_for_mui_table = {
+                                        ...obj_column_def_for_mui_table,
+                                        Cell: cell_column,
+                                        enableSorting:false,
+                                        
+                                        muiTableHeadCellProps:({column, table})=>{
+                                          return {
+                                            sx:{
+                                              '&.MuiTableCell-root.MuiTableCell-head .Mui-TableHeadCell-Content':{
+                                                  display:'flex',
+                                                  justifyContent:'center'
+                                              }
+                                            }
+                                          }
+                                        },
+                                        muiTableBodyCellProps: mui_table_bodycell_props
+                                    }
+
+                                }
+                                else if (custom_cell?.type === 'tag'){
 
                                     const custom_cell_rules = custom_cell?.rules;
                                     
@@ -6901,6 +7027,12 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
   return (
     <div className={`fit-container`}>
         
+        {
+            dataContext !== null && (
+              <h1>{JSON.stringify(dataContext,null,2)}</h1>
+            )
+        }
+
         {loading && (
             <div className={`d-flex justify-content-center align-items-center ${styles['fit-loading']}`}>
               <Bars width='80' height='80' visible={loading} color='#4fa94d'/>
@@ -7836,6 +7968,19 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                   )
                                                                               }}
                                                                           />
+
+                                                                          <Modal show={modalProps?.[obj_detail?.['uuid']]?.show ?? false} 
+                                                                                backdrop={true}
+                                                                                centered={true}
+                                                                          >
+                                                                               {/* <Modal.Header style={{backgroundColor:'lightblue'}}>
+                                                                                   <Modal.Title>Welcome,</Modal.Title>
+                                                                               </Modal.Header> */}
+                                                                              <Modal.Body>
+                                                                                  <h1>Teks</h1>
+                                                                              </Modal.Body>
+                                                                              {/* <Modal.Footer></Modal.Footer> */}
+                                                                          </Modal>
                                                                       </LocalizationProvider>
                                                                     )
                                                               }

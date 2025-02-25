@@ -1,6 +1,6 @@
 import {v7 as uuidv7} from 'uuid';
 import Trend from 'react-trend';
-import React, { DOMElement, useEffect, useReducer, useRef, useState } from 'react'
+import React, { DOMElement, useContext, useEffect, useReducer, useRef, useState } from 'react'
 import ReactDOM from 'react-dom/client'
 import storeMenu from '../../../../stores'
 import FormTemplate, { FinalSessionType, FormTemplate_MultiSelectType, FormTemplateInDataChangeType, FormTemplateType, PropConfigConfirmDialog, PropConfigConfirmDialogResponse, PropConfigType } from '../../../../components/atoms/FormTemplate'
@@ -20,9 +20,22 @@ import LoginAuth0 from '../../../../components/atoms/LoginAuth0';
 import RichEditor from '../../../../components/atoms/RichEditor';
 import CheckMarkAnimate from '../../../../components/atoms/FormTemplate/CheckMarkAnimate';
 import { IconField } from 'primereact/iconfield';
+import FormTemplateContextProv, { FormTemplateContext, FormTemplateContextInterface } from '../../../../components/atoms/FormTemplate/FormTemplateContext';
 
 
+const ButtonProviderClick = ({param}) => {
+  const {dataContext, setDataContext} = useContext<FormTemplateContextInterface>(FormTemplateContext);
 
+  return (
+
+    <div>
+        <ButtonPrime color='warning'
+                          label={'Provider'}
+                          onClick={()=>setDataContext({tes: param })}
+                      />
+    </div>
+  )
+}
 
 
 const NestingMenu = (props:{arr_menu:any[], index:number, item:any|null}) => {
@@ -1173,6 +1186,21 @@ const TransaksiPenjualanForm = () => {
                                           enableColumnResizing:true,
                                           data_column:[
                                             {
+                                              accessorKey:'action',
+                                              header:'Action',
+                                              grow:false,
+                                              custom_cell:{
+                                                type:'actions',
+                                                size:100,
+                                                actions:[
+                                                  // {type:'custom_element_in_modal', style:{backgroundColorHover:'#abeef0'}, icon:<IconField className='pi pi-file-edit' style={{color:'#4389ff'}} />}
+                                                  // ,{type:'custom_element_in_modal', style:{backgroundColorHover:'#ffd7d7'}, icon:<IconField className='pi pi-trash' style={{color:'#FF0000'}} />}
+                                                  {type:'custom_element_in_modal', style:{backgroundColorHover:'white'}, icon:<IconField className='pi pi-file-edit' style={{color:'#4389ff'}} />}
+                                                  ,{type:'custom_element_in_modal', style:{backgroundColorHover:'white'}, icon:<IconField className='pi pi-trash' style={{color:'#FF0000'}} />}
+                                                ]
+                                              }
+                                            },
+                                            {
                                               accessorKey:'nama_produk',  // tidak ada key nya
                                               header: 'Produk',
                                               grow:true,
@@ -1620,179 +1648,186 @@ const TransaksiPenjualanForm = () => {
   }
 
 
-
   return (
+    // <FormTemplateContextProv>
+
     <div>
+      {/* Testing Provider */}
+      
+        {/* <ButtonProviderClick param='Hello World'/> */}
 
-        {/* <Trend 
-              data={randomNumberArray(30)} 
-              strokeWidth={2}
-              strokeLinecap={'butt'}
+      {/* ------------- */}
 
-              radius={0}
-              smooth
+          {/* <Trend 
+                data={randomNumberArray(30)} 
+                strokeWidth={2}
+                strokeLinecap={'butt'}
 
-              // gradient={['#0ff','#0F0', '#FF0']}
-              gradient={['orange','red', '#FF0']}
+                radius={0}
+                smooth
 
-              autoDraw
-              autoDrawDuration={1000}
-              autoDrawEasing='ease-in'
-              /> */}
+                // gradient={['#0ff','#0F0', '#FF0']}
+                gradient={['orange','red', '#FF0']}
 
-        {/* Full Screen hanya bekerja pada browser 'Edge', 'Chrome' -> jangan buka devtools F12 */}
-        {/* <ButtonPrime label="Full Screen" onClick={()=>{
+                autoDraw
+                autoDrawDuration={1000}
+                autoDrawEasing='ease-in'
+                /> */}
 
-            const element = document.documentElement;
-          
-              element.requestFullscreen().catch((error) => {
-                console.error("Gagal masuk ke mode fullscreen:", error);
-              });
-        }}/> */}
+          {/* Full Screen hanya bekerja pada browser 'Edge', 'Chrome' -> jangan buka devtools F12 */}
+          {/* <ButtonPrime label="Full Screen" onClick={()=>{
 
-
-        {/* ----- Check Mark */}
-        {/* {
-          ringCheck && (
-                <CheckMarkAnimate />
-          )
-        } */}
-
-        {/* <div className='mt-4'></div> */}
-        {/* ---------------- */}
+              const element = document.documentElement;
+            
+                element.requestFullscreen().catch((error) => {
+                  console.error("Gagal masuk ke mode fullscreen:", error);
+                });
+          }}/> */}
 
 
-        {/* <h1>State : {dataredus}</h1> */}
+          {/* ----- Check Mark */}
+          {/* {
+            ringCheck && (
+                  <CheckMarkAnimate />
+            )
+          } */}
+
+          {/* <div className='mt-4'></div> */}
+          {/* ---------------- */}
 
 
-        {/* Testing Create Element by DOM */}
-
-        {/* <div id = "tes-element">
-            <div style = {{color:'grey', pointerEvents:'none', opacity:0, height: 0}}>
-                © Gunardi Halim
-            </div>
-        </div> */}
-
-        <div
-          className='fit-infinite-slider'
-          style={{
-            // border:'1px solid blue'
-            // width:'500px'
-          }}
-          // id = "samp-id-infinite-slider" // "ReactDOM.createRoot -> Render"
-          // ref={sampleRef}
-        >
-          {/* Render Element 'InfiniteSlider' secara dinamis dari useEffect */}
-            {/* <InfiniteSlider /> */}
-
-        </div>
+          {/* <h1>State : {dataredus}</h1> */}
 
 
-        {/* <div className='my-3'>
-          <RichEditor />
-        </div> */}
+          {/* Testing Create Element by DOM */}
 
-        {/* Google Sign In  */}
-        {/* <div className='my-1 w-100 d-flex align-items-center'>
-            <code style={{fontSize:'20px',color:'grey'}}> SSO Manual </code>
-            <LoginGoogle />
-            <LoginFacebook />
+          {/* <div id = "tes-element">
+              <div style = {{color:'grey', pointerEvents:'none', opacity:0, height: 0}}>
+                  © Gunardi Halim
+              </div>
+          </div> */}
 
-        </div> */}
+          <div
+            className='fit-infinite-slider'
+            style={{
+              // border:'1px solid blue'
+              // width:'500px'
+            }}
+            // id = "samp-id-infinite-slider" // "ReactDOM.createRoot -> Render"
+            // ref={sampleRef}
+          >
+            {/* Render Element 'InfiniteSlider' secara dinamis dari useEffect */}
+              {/* <InfiniteSlider /> */}
 
-            {/* <LoginTwitter /> */}
-            {/* <LoginLinkedin /> */}
+          </div>
 
 
-        {/* <div className='mb-3 mt-2 d-flex align-items-center' style={{overflow:'auto'}}>
-            <code style={{fontSize:'20px', color:'grey'}} className='me-2'> SSO Auth0 </code><LoginAuth0 />
-        </div> */}
+          {/* <div className='my-3'>
+            <RichEditor />
+          </div> */}
+
+          {/* Google Sign In  */}
+          {/* <div className='my-1 w-100 d-flex align-items-center'>
+              <code style={{fontSize:'20px',color:'grey'}}> SSO Manual </code>
+              <LoginGoogle />
+              <LoginFacebook />
+
+          </div> */}
+
+              {/* <LoginTwitter /> */}
+              {/* <LoginLinkedin /> */}
 
 
-        {/* <div className='col-12 col-md-4'>
-            <NestingMenu 
-                  arr_menu={[
-                              {id:'id-menu',name:'Menu-1'
-                                , icon: <InputIcon className='pi pi-objects-column nm-custom-menu' 
-                                          style={{fontSize:'15px', marginRight:'15px'}}></InputIcon>
-                                , items:[
-                                    {id:'id-menu11', name:'Menu-1-1'},
-                                    {id:'id-menu12', name:'Menu-1-2'
+          {/* <div className='mb-3 mt-2 d-flex align-items-center' style={{overflow:'auto'}}>
+              <code style={{fontSize:'20px', color:'grey'}} className='me-2'> SSO Auth0 </code><LoginAuth0 />
+          </div> */}
+
+
+          {/* <div className='col-12 col-md-4'>
+              <NestingMenu 
+                    arr_menu={[
+                                {id:'id-menu',name:'Menu-1'
+                                  , icon: <InputIcon className='pi pi-objects-column nm-custom-menu' 
+                                            style={{fontSize:'15px', marginRight:'15px'}}></InputIcon>
+                                  , items:[
+                                      {id:'id-menu11', name:'Menu-1-1'},
+                                      {id:'id-menu12', name:'Menu-1-2'
+                                          ,items:[
+                                            {id:'id-menu121', name:'Menu-1-2-1'},
+                                            {id:'id-menu122', name:'Menu-1-2-2'}
+                                          ]
+                                      },
+                                      {id:'id-menu13', name:'Menu-1-3'}
+                                    ]
+                                },
+                                {id:'id-menu2',name:'Menu-2'
+                                  , icon: <InputIcon className='pi pi-receipt nm-custom-menu' 
+                                            style={{fontSize:'15px', marginRight:'15px'}}></InputIcon>
+                                  , items:[
+                                      {id:'id-menu21', name:'Menu-2-1'},
+                                      {id:'id-menu22', name:'Menu-2-2'},
+                                      {id:'id-menu23', name:'Menu-2-3'},
+                                      {id:'id-menu24', name:'Menu-2-4'},
+                                      {id:'id-menu25', name:'Menu-2-5'},
+                                      {id:'id-menu26', name:'Menu-2-6'},
+                                      {id:'id-menu27', name:'Menu-2-7'},
+                                      {id:'id-menu28', name:'Menu-2-8'},
+                                      {id:'id-menu29', name:'Menu-2-9'},
+                                      {id:'id-menu30', name:'Menu-3-0'}
+                                    ]
+                                  },
+                                {id:'id-menu3',name:'Menu-3'
+                                  , icon: <InputIcon className='pi pi-receipt nm-custom-menu' 
+                                            style={{fontSize:'15px', marginRight:'15px'}}></InputIcon>
+                                  , items:[
+                                    {id:'id-menu31', name:'Menu-3-1'},
+                                    {id:'id-menu32', name:'Menu-3-2'
                                         ,items:[
-                                          {id:'id-menu121', name:'Menu-1-2-1'},
-                                          {id:'id-menu122', name:'Menu-1-2-2'}
+                                          {id:'id-menu321', name:'Menu-3-2-1'},
+                                          {id:'id-menu322', name:'Menu-3-2-2',
+                                            items:[
+                                              {id:'id-menu3221', name:'Menu-3-2-2-1'},
+                                              {id:'id-menu3222', name:'Menu-3-2-2-2'}
+                                            ]
+                                          }
                                         ]
                                     },
-                                    {id:'id-menu13', name:'Menu-1-3'}
+                                    {id:'id-menu33', name:'Menu-3-3'}
                                   ]
-                              },
-                              {id:'id-menu2',name:'Menu-2'
-                                , icon: <InputIcon className='pi pi-receipt nm-custom-menu' 
-                                          style={{fontSize:'15px', marginRight:'15px'}}></InputIcon>
-                                , items:[
-                                    {id:'id-menu21', name:'Menu-2-1'},
-                                    {id:'id-menu22', name:'Menu-2-2'},
-                                    {id:'id-menu23', name:'Menu-2-3'},
-                                    {id:'id-menu24', name:'Menu-2-4'},
-                                    {id:'id-menu25', name:'Menu-2-5'},
-                                    {id:'id-menu26', name:'Menu-2-6'},
-                                    {id:'id-menu27', name:'Menu-2-7'},
-                                    {id:'id-menu28', name:'Menu-2-8'},
-                                    {id:'id-menu29', name:'Menu-2-9'},
-                                    {id:'id-menu30', name:'Menu-3-0'}
-                                  ]
-                                },
-                              {id:'id-menu3',name:'Menu-3'
-                                , icon: <InputIcon className='pi pi-receipt nm-custom-menu' 
-                                          style={{fontSize:'15px', marginRight:'15px'}}></InputIcon>
-                                , items:[
-                                  {id:'id-menu31', name:'Menu-3-1'},
-                                  {id:'id-menu32', name:'Menu-3-2'
-                                      ,items:[
-                                        {id:'id-menu321', name:'Menu-3-2-1'},
-                                        {id:'id-menu322', name:'Menu-3-2-2',
-                                          items:[
-                                            {id:'id-menu3221', name:'Menu-3-2-2-1'},
-                                            {id:'id-menu3222', name:'Menu-3-2-2-2'}
-                                          ]
-                                        }
-                                      ]
-                                  },
-                                  {id:'id-menu33', name:'Menu-3-3'}
-                                ]
-                                }
-                            ]
-                          } 
-                  index={0}
-                  item={null}
-                  />
-        </div> */}
+                                  }
+                              ]
+                            } 
+                    index={0}
+                    item={null}
+                    />
+          </div> */}
 
-        {
-          statusDone && (
-            
-              <FormTemplate 
-              
-                  props={propConfig} 
-                  // props={propConfig} 
+          {
+            statusDone && (
+                  <>
+                    <FormTemplate 
+                    
+                        props={propConfig} 
+                        // props={propConfig} 
 
-                  style={{
-                    show_border:true
-                  }}
+                        style={{
+                          show_border:true
+                        }}
 
-                  final_session={finalSession}
-                  status={'edit'} 
-                  edit_data={arrDataEdit}
-                  inDataChange={inDataChangeState}
-                  outDataChange={outChange}
+                        final_session={finalSession}
+                        status={'edit'} 
+                        edit_data={arrDataEdit}
+                        inDataChange={inDataChangeState}
+                        outDataChange={outChange}
 
-                  inConfirmDialog={inConfirmDialog}
-                  outConfirmDialog={outConfirmDialogHandle}
-              />
-            
-          )
-        }
-    </div>
+                        inConfirmDialog={inConfirmDialog}
+                        outConfirmDialog={outConfirmDialogHandle}
+                    />
+                </>
+            )
+          }
+      </div>
+    // </FormTemplateContextProv>
   )
 }
 
