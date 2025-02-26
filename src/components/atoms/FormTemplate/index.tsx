@@ -725,7 +725,29 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
     ]
   });
 
+  useEffect(()=>{
+    // *** ini hanya sementara 
+    // *** Nanti di Pindahkan dan Update sewaktu edit data
+      // set uuid rowlist
+      let rowlist_temp = {...rowListTable};
 
+      for (let [k, v_obj] of Object.entries(rowlist_temp)){
+
+          rowlist_temp[k] = v_obj.map((item, idx)=>{
+            return {
+              ...item,
+              uuid: uuidv7()
+            }
+          })
+
+          // console.error(JSON.stringify(v_obj,null,2))
+      }
+
+      setRowListTable({...rowlist_temp})
+      console.error(JSON.stringify(rowlist_temp, null, 2))
+
+
+  },[])
 
   const resetStateRef = () => {
 
@@ -1274,7 +1296,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                   {
                                                     const uuid_style = uuidv7();
                                                     return (
-                                                      <>
+                                                      <div key={`fit-actions-${obj_detail?.name}-${index}`}>
                                                         <style>
                                                         {
                                                           `
@@ -1295,7 +1317,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                         </style>
 
                                                         <span className={`fit-act-cust-ele-${uuid_style}`}>{item?.icon}</span>
-                                                      </>
+                                                      </div>
                                                     )
                                                   }
                                                 })

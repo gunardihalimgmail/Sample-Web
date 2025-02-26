@@ -1,0 +1,12 @@
+.magnify-custom-large {
+  animation: start-open 0.7s linear;
+}
+
+@keyframes start-open {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+}

@@ -21,6 +21,7 @@ import RichEditor from '../../../../components/atoms/RichEditor';
 import CheckMarkAnimate from '../../../../components/atoms/FormTemplate/CheckMarkAnimate';
 import { IconField } from 'primereact/iconfield';
 import FormTemplateContextProv, { FormTemplateContext, FormTemplateContextInterface } from '../../../../components/atoms/FormTemplate/FormTemplateContext';
+import MagnifyCustom from '../../../../components/atoms/MagnifyCustom';
 
 
 const ButtonProviderClick = ({param}) => {
@@ -1652,6 +1653,15 @@ const TransaksiPenjualanForm = () => {
     // <FormTemplateContextProv>
 
     <div>
+
+      {/* Magnify Custom */}
+      <div style={{width:'300px', height:'300px'}} className='mb-2'>
+          <MagnifyCustom imgSrc={`https://cdn.britannica.com/08/187508-050-D6FB5173/Shanghai-Tower-Gensler-San-Francisco-world-Oriental-2015.jpg`} 
+                      imgAlt={'City'}
+                      zoomLevel={5}/>
+      </div>
+      {/* ------------ */}
+
       {/* Testing Provider */}
       
         {/* <ButtonProviderClick param='Hello World'/> */}
