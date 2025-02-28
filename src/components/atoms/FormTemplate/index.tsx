@@ -427,6 +427,12 @@ type FormTemplate_Detail = {
       density?:'comfortable' | 'compact' | 'spacious';
       enableColumnResizing?:boolean; // column bisa di resize
       data_column?:FormTemplate_DetailTable[]
+    };
+    edit?:{
+      key_name:string;
+    };
+    save:{
+      key_name:string;
     }
 }
 
@@ -716,7 +722,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
   }
 
   // **** Data Detail Table by Name Detail
-  const [rowListTable, setRowListTable] = useState<{[name:string]:any[]}>({
+  const [rowListTable, setRowListTable] = useState<{[uuid:string]:any[]}>({
     'name_detail_transaksi':[
       {kode_produk:'shell', image_product:'https://wallpapers.com/images/hd/shell-logo-red-yellow-ylhb2f0hphp6ey09-ylhb2f0hphp6ey09.png', nama_produk:'Shell', code:'SHL', '1h':0.12, '1h_trend':'naik',  harga:125000, data_trend:randomNumberArray(30), status:'Failed'}
       ,{kode_produk:'pepsi', image_product:'https://awsimages.detik.net.id/community/media/visual/2019/11/22/5046d875-0493-4a5e-9057-0d402c1d841e.jpeg?w=600&q=90', nama_produk:'Pepsi', code:'PSI', '1h':'5.00', '1h_trend':'turun', data_trend:randomNumberArray(50), harga:500500.19, status:'Completed'}
@@ -1214,6 +1220,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
             // let tempGenIndexAllInput:any[] = await generateIndexAllInput(props);
             let tempGenIndexAllInput:any[] = await generateIndexAllInput(props.config);
             setPropertyConfig(tempGenIndexAllInput);
+            
             // ... End
 
             // serialize split ukuran file ter-upload dan max size
@@ -1243,7 +1250,9 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
       // * Table hanya khusus Form
       if (typeof props?.type !== 'undefined' && props?.type === 'Form'){
 
-        let props_config = props?.config;
+        // let props_config = props?.config;
+        let props_config = propertyConfig;
+
         if (Array.isArray(props_config)){
 
             let var_temp_table_column:{[name:string]:MRT_ColumnDef<any>[]} = {};
@@ -1252,9 +1261,9 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
               let section_detail = obj_section?.detail;
               if (typeof section_detail !== 'undefined' && Array.isArray(section_detail)){
                   if (section_detail.length > 0){
-                    
-                    section_detail.forEach((obj_detail, idx_detail)=>{
 
+                    section_detail.forEach((obj_detail, idx_detail)=>{
+                        
                         const detail_name:string = obj_detail?.name;
                         const detail_table_data_column:any[] = obj_detail?.table?.data_column || []; 
                         
@@ -1295,6 +1304,9 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                   if (item?.type === 'custom_element_in_modal')
                                                   {
                                                     const uuid_style = uuidv7();
+
+                                                    const detail_uuid = obj_detail?.['uuid']; // uuid dari per satu detail_name
+
                                                     return (
                                                       <div key={`fit-actions-${obj_detail?.name}-${index}`}>
                                                         <style>
@@ -1814,7 +1826,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
       
       return null;
     }
-  ,[props])
+  ,[props, propertyConfig])
 
   useEffect(()=>{
 
@@ -7943,13 +7955,31 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                       >
                                                                           <MaterialReactTable
                                                                               initialState={{
-                                                                                density: obj_detail?.table?.density ?? 'comfortable'
+                                                                                density: obj_detail?.table?.density ?? 'comfortable',
+                                                                                // columnFilters:[
+                                                                                //   // filter kolom yang tidak perlu di tampilkan ke dalam table
+                                                                                //   {
+                                                                                //     id:'status',
+                                                                                //     value: 'Completed'
+                                                                                //   }
+                                                                                // ]
                                                                               }}
                                                                               muiTableHeadCellProps={{style:{fontFamily:'Nunito'}}}
                                                                               muiTableBodyCellProps={{style:{fontFamily:'Nunito'}}}
 
                                                                               columns={columnDetailTable?.[obj_detail?.name]||[]}
-                                                                              data={rowListTable?.[obj_detail?.name]||[]}
+                                                                              // * Filter Data dengan status bukan delete
+                                                                              data={
+                                                                                      typeof rowListTable?.[obj_detail?.['name']] !== 'undefined' 
+                                                                                      && Array.isArray(rowListTable?.[obj_detail?.['name']])
+                                                                                        ?
+                                                                                            rowListTable?.[obj_detail?.['name']].length > 0 ?
+                                                                                                rowListTable?.[obj_detail?.['name']].filter((item, index)=>{
+                                                                                                  return item?.['status'] !== 'Delete'
+                                                                                                }) 
+                                                                                            : []
+                                                                                        : []
+                                                                                    }
                                                                               muiTopToolbarProps={{
                                                                                 // styling top Toolbar
                                                                                 sx:{

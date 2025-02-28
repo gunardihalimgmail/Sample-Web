@@ -1182,6 +1182,12 @@ const TransaksiPenjualanForm = () => {
                                       name:'name_detail_transaksi', // harus unik antar detail - name
                                       title:'Detail',
                                       icon:<IconField className='pi pi-table' style={{color:'#4389ff'}} />
+                                      , edit:{
+                                        key_name: 'edit_detail_transaksi'
+                                      }
+                                      , save:{
+                                          key_name: 'detail_transaksi'
+                                      }
                                       , table:{
                                           density:'compact',
                                           enableColumnResizing:true,
@@ -1347,6 +1353,14 @@ const TransaksiPenjualanForm = () => {
                   ,{id:'id-file-3', name:'data_customer_list.xls', size:'150', type:'application/vnd.ms-excel', unit:'KB', url:'https://www.techquintal.com/wp-content/uploads/2017/01/Modern-Technology.jpg'}
                   ,{id:'id-gambar-1', name:'Modern-Technology.jpg', size:'199', type:'image/jpg', unit:'KB', url:'https://www.techquintal.com/wp-content/uploads/2017/01/Modern-Technology.jpg'}
               ]
+
+        // *** Detail Table 
+        , 'edit_detail_transaksi':[
+                {kode_produk:'shell', image_product:'https://wallpapers.com/images/hd/shell-logo-red-yellow-ylhb2f0hphp6ey09-ylhb2f0hphp6ey09.png', nama_produk:'Shell', code:'SHL', '1h':0.12, '1h_trend':'naik',  harga:125000, data_trend:randomNumberArray(30), status:'Failed'}
+                ,{kode_produk:'pepsi', image_product:'https://awsimages.detik.net.id/community/media/visual/2019/11/22/5046d875-0493-4a5e-9057-0d402c1d841e.jpeg?w=600&q=90', nama_produk:'Pepsi', code:'PSI', '1h':'5.00', '1h_trend':'turun', data_trend:randomNumberArray(50), harga:500500.19, status:'Completed'}
+                ,{kode_produk:'dior', image_product:'https(broken tes)://i.pinimg.com/736x/e0/08/c7/e008c74ffb23fdfcdf3ffdf39ba44b9b.jpg', nama_produk:'Dior', code:'DIR', '1h':10.58, '1h_trend':'turun', harga:75000, data_trend:randomNumberArray(50), status:'Process'}
+                ,{kode_produk:'coca-cola', image_product:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4bYOCRGoYXnHFtxxvhouF4dffr6IbIFkyzg&s', nama_produk:'Coca Cola', code:'CCL',  '1h':97.23, '1h_trend':'naik', harga:15750, data_trend:randomNumberArray(50), status:'Other'}
+          ]
     })
 
     setTimeout(()=>{
@@ -1655,11 +1669,11 @@ const TransaksiPenjualanForm = () => {
     <div>
 
       {/* Magnify Custom */}
-      <div style={{width:'300px', height:'300px'}} className='mb-2'>
+      {/* <div style={{width:'300px', height:'300px'}} className='mb-2'>
           <MagnifyCustom imgSrc={`https://cdn.britannica.com/08/187508-050-D6FB5173/Shanghai-Tower-Gensler-San-Francisco-world-Oriental-2015.jpg`} 
                       imgAlt={'City'}
                       zoomLevel={5}/>
-      </div>
+      </div> */}
       {/* ------------ */}
 
       {/* Testing Provider */}
