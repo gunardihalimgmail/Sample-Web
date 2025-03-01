@@ -1189,6 +1189,7 @@ const TransaksiPenjualanForm = () => {
                                           key_name: 'detail_transaksi'
                                       }
                                       , table:{
+                                          set_new_key_row_uuid:'uuid',  // nama key baru by template uuid per baris data
                                           density:'compact',
                                           enableColumnResizing:true,
                                           data_column:[

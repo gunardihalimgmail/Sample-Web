@@ -424,6 +424,7 @@ type FormTemplate_Detail = {
     title:string;
     icon?:React.ReactElement;
     table?:{
+      set_new_key_row_uuid:string;  // nama key generate otomatis by template sebagai uuid per baris data
       density?:'comfortable' | 'compact' | 'spacious';
       enableColumnResizing?:boolean; // column bisa di resize
       data_column?:FormTemplate_DetailTable[]
@@ -723,37 +724,13 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
   // **** Data Detail Table by Name Detail
   const [rowListTable, setRowListTable] = useState<{[uuid:string]:any[]}>({
-    'name_detail_transaksi':[
-      {kode_produk:'shell', image_product:'https://wallpapers.com/images/hd/shell-logo-red-yellow-ylhb2f0hphp6ey09-ylhb2f0hphp6ey09.png', nama_produk:'Shell', code:'SHL', '1h':0.12, '1h_trend':'naik',  harga:125000, data_trend:randomNumberArray(30), status:'Failed'}
-      ,{kode_produk:'pepsi', image_product:'https://awsimages.detik.net.id/community/media/visual/2019/11/22/5046d875-0493-4a5e-9057-0d402c1d841e.jpeg?w=600&q=90', nama_produk:'Pepsi', code:'PSI', '1h':'5.00', '1h_trend':'turun', data_trend:randomNumberArray(50), harga:500500.19, status:'Completed'}
-      ,{kode_produk:'dior', image_product:'https(broken tes)://i.pinimg.com/736x/e0/08/c7/e008c74ffb23fdfcdf3ffdf39ba44b9b.jpg', nama_produk:'Dior', code:'DIR', '1h':10.58, '1h_trend':'turun', harga:75000, data_trend:randomNumberArray(50), status:'Process'}
-      ,{kode_produk:'coca-cola', image_product:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4bYOCRGoYXnHFtxxvhouF4dffr6IbIFkyzg&s', nama_produk:'Coca Cola', code:'CCL',  '1h':97.23, '1h_trend':'naik', harga:15750, data_trend:randomNumberArray(50), status:'Other'}
-    ]
+    // 'name_detail_transaksi':[
+    //   {kode_produk:'shell', image_product:'https://wallpapers.com/images/hd/shell-logo-red-yellow-ylhb2f0hphp6ey09-ylhb2f0hphp6ey09.png', nama_produk:'Shell', code:'SHL', '1h':0.12, '1h_trend':'naik',  harga:125000, data_trend:randomNumberArray(30), status:'Failed'}
+    //   ,{kode_produk:'pepsi', image_product:'https://awsimages.detik.net.id/community/media/visual/2019/11/22/5046d875-0493-4a5e-9057-0d402c1d841e.jpeg?w=600&q=90', nama_produk:'Pepsi', code:'PSI', '1h':'5.00', '1h_trend':'turun', data_trend:randomNumberArray(50), harga:500500.19, status:'Completed'}
+    //   ,{kode_produk:'dior', image_product:'https(broken tes)://i.pinimg.com/736x/e0/08/c7/e008c74ffb23fdfcdf3ffdf39ba44b9b.jpg', nama_produk:'Dior', code:'DIR', '1h':10.58, '1h_trend':'turun', harga:75000, data_trend:randomNumberArray(50), status:'Process'}
+    //   ,{kode_produk:'coca-cola', image_product:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4bYOCRGoYXnHFtxxvhouF4dffr6IbIFkyzg&s', nama_produk:'Coca Cola', code:'CCL',  '1h':97.23, '1h_trend':'naik', harga:15750, data_trend:randomNumberArray(50), status:'Other'}
+    // ]
   });
-
-  useEffect(()=>{
-    // *** ini hanya sementara 
-    // *** Nanti di Pindahkan dan Update sewaktu edit data
-      // set uuid rowlist
-      let rowlist_temp = {...rowListTable};
-
-      for (let [k, v_obj] of Object.entries(rowlist_temp)){
-
-          rowlist_temp[k] = v_obj.map((item, idx)=>{
-            return {
-              ...item,
-              uuid: uuidv7()
-            }
-          })
-
-          // console.error(JSON.stringify(v_obj,null,2))
-      }
-
-      setRowListTable({...rowlist_temp})
-      console.error(JSON.stringify(rowlist_temp, null, 2))
-
-
-  },[])
 
   const resetStateRef = () => {
 
@@ -2610,6 +2587,81 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                     }
 
                   }
+              }
+
+              // * Parsing data edit ke 'DETAIL'
+              if (Array.isArray(propertyConfig) && propertyConfig.length > 0)
+              {
+                    
+                    // eg. {'uuid': [{...data}]}
+                    let rowlist_by_uuid_temp = {};
+
+
+                    // setRowListTable({...rowlist_temp})
+                    // console.error(JSON.stringify(rowlist_temp, null, 2))
+
+                    for (let itemSection of propertyConfig)
+                    {
+                      if (typeof itemSection?.detail !== 'undefined' 
+                            && Array.isArray(itemSection?.detail) 
+                            && itemSection?.detail.length > 0)
+                      {
+                          for (let itemDetail of itemSection.detail)
+                          {
+                              const detail_edit_keyname = itemDetail?.edit?.key_name;
+                              const detail_save_keyname = itemDetail?.save?.key_name;
+                              const detail_table_setkeyrow_uuid = itemDetail?.table?.set_new_key_row_uuid;  // nama key uuid di tentukan user
+
+                              if (typeof detail_edit_keyname !== 'undefined')
+                              {
+                                    const detail_data = edit_data?.[detail_edit_keyname];
+
+                                    if (typeof detail_data !== 'undefined')
+                                    {
+                                        const detail_uuid = itemDetail?.['uuid'];   // uuid dari detail_name di generate otomatis oleh template (Bukan User)
+                                        if (typeof detail_uuid !== 'undefined')
+                                        {
+
+                                            if (Array.isArray(detail_data) &&
+                                                  detail_data.length > 0 &&
+                                                  typeof detail_table_setkeyrow_uuid !== 'undefined')
+                                            {
+                                                    // *** Generate uuid per row data detail
+                                                    let data_temp:any[] = [];
+                                                    data_temp = detail_data.map((item, idx)=>{
+                                                      return {
+                                                        ...item,
+                                                        [detail_table_setkeyrow_uuid]: uuidv7()
+                                                      }
+                                                    })
+
+                                                    // * set ke table view berdasarkan uuid
+                                                    rowlist_by_uuid_temp[detail_uuid] = [...data_temp];
+
+                                                    if (typeof detail_save_keyname !== 'undefined')
+                                                    {
+                                                        let rowlist_by_savename_temp:any[] = [...data_temp];
+                                                        refDataChange.current = {
+                                                          ...refDataChange.current,
+                                                          [detail_save_keyname]: [...rowlist_by_savename_temp]
+                                                        }
+                                                    }
+                        
+                                            }
+                                        }
+                                    }
+                              }
+                          }
+                      }
+                    }
+
+                    if (Object.keys(rowlist_by_uuid_temp).length > 0)
+                    {
+                      setRowListTable({...rowlist_by_uuid_temp});
+                    }
+                    else {
+                      setRowListTable({});
+                    }
               }
 
               // set data edit 'date' ke semua element dom
@@ -7970,12 +8022,13 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                               columns={columnDetailTable?.[obj_detail?.name]||[]}
                                                                               // * Filter Data dengan status bukan delete
                                                                               data={
-                                                                                      typeof rowListTable?.[obj_detail?.['name']] !== 'undefined' 
-                                                                                      && Array.isArray(rowListTable?.[obj_detail?.['name']])
+                                                                                      typeof rowListTable?.[obj_detail?.['uuid']] !== 'undefined' 
+                                                                                      && Array.isArray(rowListTable?.[obj_detail?.['uuid']])
                                                                                         ?
-                                                                                            rowListTable?.[obj_detail?.['name']].length > 0 ?
-                                                                                                rowListTable?.[obj_detail?.['name']].filter((item, index)=>{
-                                                                                                  return item?.['status'] !== 'Delete'
+                                                                                            rowListTable?.[obj_detail?.['uuid']].length > 0 ?
+                                                                                                rowListTable?.[obj_detail?.['uuid']].filter((item, index)=>{
+                                                                                                  // return item?.['status'] !== 'Delete'
+                                                                                                  return item
                                                                                                 }) 
                                                                                             : []
                                                                                         : []
