@@ -9,7 +9,7 @@ import {Toast} from 'primereact/toast';
 import { Message } from 'primereact/message';
 import _ from 'lodash';
 import { Bug, Ext_Csv, Ext_Doc, Ext_Docx, Ext_Ppt, Ext_Pptx, Ext_Txt, Ext_Xls, Ext_Xlsx, NoData } from '../../../assets';
-import { Bars } from 'react-loader-spinner';
+import { Bars, Blocks } from 'react-loader-spinner';
 import { CollectionsOutlined, ConstructionOutlined, CrisisAlert, DateRangeRounded, MusicNote } from '@mui/icons-material';
 import ReactDatePicker from 'react-datepicker';
 import {format, subDays} from 'date-fns';
@@ -36,6 +36,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MaterialReactTable, MRT_Cell, MRT_ColumnDef } from 'material-react-table';
 import { FormTemplateContext, FormTemplateContextInterface } from './FormTemplateContext';
+import { Tooltip } from 'primereact/tooltip';
 // import { format } from 'date-fns';
 
 export type FormatDateFormTemplate = 'dd MMMM yyyy'|'yyyy-MM-dd';
@@ -406,7 +407,15 @@ type FormTemplate_DetailTable_CustomCell = {
 |{
   type:'actions'; // edit, custom actions, dst...
   size?:number;  // ukuran width kolom
-  actions:Array<|{type:'custom_element_in_modal'; style?:{backgroundColorHover?:string}; icon:React.ReactElement}>
+  actions:Array<|{type:'custom_element_in_modal'; name:string; tipe_form:'Custom'|'Template'; style?:{backgroundColorHover?:string}; icon:React.ReactElement
+                  ; modal?:{
+                      enabled:boolean;
+                      header?:{
+                        text?:string;
+                        backgroundColor?:string;
+                      }
+                    }
+                }>
 }
 
 
@@ -425,6 +434,7 @@ type FormTemplate_Detail = {
     icon?:React.ReactElement;
     table?:{
       set_new_key_row_uuid:string;  // nama key generate otomatis by template sebagai uuid per baris data
+      set_new_key_status_for_delete:string;   // name key baru sebagai 'status' jika ada 'DELETE' row data
       density?:'comfortable' | 'compact' | 'spacious';
       enableColumnResizing?:boolean; // column bisa di resize
       data_column?:FormTemplate_DetailTable[]
@@ -519,9 +529,8 @@ interface ParamLocal{
 
 const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_session, status, edit_data, inDataChange, outDataChange, inConfirmDialog, outConfirmDialog, ...rest}) => {
 
-  const {dataContext, setDataContext} = useContext<FormTemplateContextInterface>(FormTemplateContext);
+  const {setContextActionClick, contextShowModal} = useContext<FormTemplateContextInterface>(FormTemplateContext);
 
-  
 
   // outDataChange -> output result to other form
 
@@ -692,7 +701,12 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
   // *** Modal ***
   // ---- {'uuid': {show:true}}
-  const [ modalProps, setModalProps ] = useState<{[uuid:string]:{show:boolean}}>({});
+  const [ modalProps, setModalProps ] = useState<{[uuid:string]:{show:boolean, props?:{}}}>({});
+
+  useEffect(()=>{
+    console.log('---------- HIDE MODAL PROPS ')
+    console.log(modalProps)
+  },[modalProps])
 
   useEffect(()=>{
     const windowFunc = () => {
@@ -1222,6 +1236,33 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
   },[props, status])
 
 
+  useEffect(()=>{
+    // *** Show Modal
+    if (Object.keys(contextShowModal).length > 0)
+    {
+        // {'uuid_detail': {show:true, props:..}}
+        for (let [key_detail_uuid, object_props] of Object.entries(contextShowModal))
+        {
+          // * Periksa apakah ada "uuid detail" dalam rowListTable. jika ada maka set property ke modal
+            const findDetailUUID = rowListTable?.[key_detail_uuid];
+            if (typeof findDetailUUID !== 'undefined')
+            {
+                setTimeout(()=>{
+                  setModalProps(prev=>{
+                    return {
+                      ...prev,
+                      [key_detail_uuid]: {...object_props, loader: false}
+                    }
+                  });
+                }, 100)
+
+                break;  // keluar dari loop
+            }
+        }
+    }
+  },[contextShowModal])
+
+
   const columnDetailTable = useMemo(()=>{
 
       // * Table hanya khusus Form
@@ -1270,8 +1311,35 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
                                     const arr_custom_cell_actions = custom_cell?.actions;
                                     const custom_cell_size = custom_cell?.size;
+
+                                    const click_Actions = (action_name, tipe_form, action_selected_props, config_obj_detail, cell, column, row, table) => {
+                                        // action_name -> 'delete', 'edit'
+                                        // tipe_form -> 'Custom', 'Template'
+                                        // config_obj_detail -> configurasi object per detail
+
+                                        // alert(JSON.stringify(cell.row.original,null,2))
+                                        // console.log("JSON.stringify(config_obj_detail,null,2)")
+                                        // console.log(JSON.stringify(config_obj_detail,null,2))
+                                        
+                                        const uuid_detail = config_obj_detail?.['uuid'];
+                                        const modal_enabled = action_selected_props?.['modal']?.['enabled'];
+
+                                        if (typeof modal_enabled !== 'undefined' && modal_enabled)
+                                        {
+                                          setModalProps(prev=>{
+                                            return {
+                                                ...prev,
+                                                [uuid_detail]: {show: true, props:{...action_selected_props, loader: true}
+                                              }
+                                            }
+                                          });
+                                        }
+
+
+                                        setContextActionClick({action_name, tipe_form, action_selected_props, config_obj_detail, cell, column, row, table})
+                                    }
                                       
-                                    cell_column = ({cell, column}) => {
+                                    cell_column = ({cell, column, row, table}) => {
                                       if (typeof arr_custom_cell_actions !== 'undefined')
                                       {
                                           return (
@@ -1280,17 +1348,25 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                 arr_custom_cell_actions.map((item, index)=>{
                                                   if (item?.type === 'custom_element_in_modal')
                                                   {
+                                                    const item_name = item?.name; // name action 'Edit', 'Delete'
+                                                    const item_tipe_form = item?.tipe_form; // tipe form action 'Custom'|'Template'
+                                                    
                                                     const uuid_style = uuidv7();
 
                                                     const detail_uuid = obj_detail?.['uuid']; // uuid dari per satu detail_name
 
                                                     return (
-                                                      <div key={`fit-actions-${obj_detail?.name}-${index}`}>
+                                                      <div key={`fit-actions-${obj_detail?.name}-${index}`}
+                                                        onClick={()=>{
+                                                                    // * item -> configurasi action yang di klik
+                                                                    click_Actions(item_name, item_tipe_form, item, obj_detail, cell, column, row, table)
+                                                                  }}
+                                                      >
                                                         <style>
                                                         {
                                                           `
                                                             .fit-act-cust-ele-${uuid_style} { 
-                                                                  display: flex;+
+                                                                  display: flex;
                                                                   align-items: center;
                                                                   justify-content: center;
                                                                   cursor:pointer;
@@ -1304,7 +1380,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                           `
                                                         }
                                                         </style>
-
+                                                        <Tooltip target={`.fit-act-cust-ele-${uuid_style}`} position='top' mouseTrack content={`${item_name}`} />
                                                         <span className={`fit-act-cust-ele-${uuid_style}`}>{item?.icon}</span>
                                                       </div>
                                                     )
@@ -2600,6 +2676,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                     // setRowListTable({...rowlist_temp})
                     // console.error(JSON.stringify(rowlist_temp, null, 2))
 
+                    refDataEditChange.current = {
+                        ...edit_data
+                    }
+
                     for (let itemSection of propertyConfig)
                     {
                       if (typeof itemSection?.detail !== 'undefined' 
@@ -2615,6 +2695,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                               if (typeof detail_edit_keyname !== 'undefined')
                               {
                                     const detail_data = edit_data?.[detail_edit_keyname];
+
 
                                     if (typeof detail_data !== 'undefined')
                                     {
@@ -2646,6 +2727,12 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                           [detail_save_keyname]: [...rowlist_by_savename_temp]
                                                         }
                                                     }
+
+                                                    refDataEditChange.current = {
+                                                        ...refDataEditChange.current,
+                                                        [detail_edit_keyname]: [...data_temp]
+                                                    }
+
                         
                                             }
                                         }
@@ -2691,10 +2778,6 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
         setTimeout(()=>{
           outDataChange_StatusProses.current = 'process_out_change';
-
-          refDataEditChange.current = {
-              ...edit_data
-          }
   
           outDataChange({data:{...refDataChange.current}, data_with_key_edit: {...refDataEditChange.current}, posisi_name_input_when_onchange:null, status_proses:'process_out_change'}, formDataRef.current);
         },200)
@@ -7112,12 +7195,6 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
   return (
     <div className={`fit-container`}>
-        
-        {
-            dataContext !== null && (
-              <h1>{JSON.stringify(dataContext,null,2)}</h1>
-            )
-        }
 
         {loading && (
             <div className={`d-flex justify-content-center align-items-center ${styles['fit-loading']}`}>
@@ -8022,14 +8099,38 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                               columns={columnDetailTable?.[obj_detail?.name]||[]}
                                                                               // * Filter Data dengan status bukan delete
                                                                               data={
+                                                                                // obj_detail?.['uuid'] -> uuid per detail digenerate otomatis oleh template
                                                                                       typeof rowListTable?.[obj_detail?.['uuid']] !== 'undefined' 
                                                                                       && Array.isArray(rowListTable?.[obj_detail?.['uuid']])
                                                                                         ?
                                                                                             rowListTable?.[obj_detail?.['uuid']].length > 0 ?
+
                                                                                                 rowListTable?.[obj_detail?.['uuid']].filter((item, index)=>{
+
+                                                                                                    const get_key_status_for_delete = obj_detail?.table?.set_new_key_status_for_delete;
+                                                                                                    if (typeof get_key_status_for_delete !== 'undefined')
+                                                                                                    {
+                                                                                                        const item_status_delete:string|null = item?.[get_key_status_for_delete];
+
+                                                                                                        // * tidak menampilkan yang status "baris data" -> 'DELETE'
+                                                                                                        if (
+                                                                                                              typeof item_status_delete !== 'undefined'
+                                                                                                              && item_status_delete !== null
+                                                                                                              && item_status_delete.toString().trim().toUpperCase() === 'DELETE')
+                                                                                                        {
+                                                                                                            return false;
+                                                                                                        }
+                                                                                                        else {
+                                                                                                            return true;
+                                                                                                        }
+                                                                                                    }
+                                                                                                    else {
+                                                                                                      return true;
+                                                                                                    }
                                                                                                   // return item?.['status'] !== 'Delete'
-                                                                                                  return item
-                                                                                                }) 
+                                                                                                  // return item;
+                                                                                                })
+
                                                                                             : []
                                                                                         : []
                                                                                     }
@@ -8077,14 +8178,57 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                           <Modal show={modalProps?.[obj_detail?.['uuid']]?.show ?? false} 
                                                                                 backdrop={true}
                                                                                 centered={true}
+                                                                                onHide={()=>{
+
+                                                                                  let modalprops_temp = {...modalProps};
+
+                                                                                  const detail_uuid = obj_detail?.['uuid']; // get data uuid by detail
+
+                                                                                  // * Hapus property modal by uuid dari modalProps
+                                                                                  if (typeof detail_uuid !== 'undefined')
+                                                                                  {
+                                                                                      if (typeof modalprops_temp?.[detail_uuid] !== 'undefined')
+                                                                                      {
+                                                                                        delete modalprops_temp?.[detail_uuid];
+                                                                                      }
+                                                                                  }
+                                                                                  setModalProps(prev=>{
+                                                                                    return {
+                                                                                        ...modalprops_temp
+                                                                                    }
+                                                                                  })
+                                                                                }}
                                                                           >
-                                                                               {/* <Modal.Header style={{backgroundColor:'lightblue'}}>
-                                                                                   <Modal.Title>Welcome,</Modal.Title>
-                                                                               </Modal.Header> */}
-                                                                              <Modal.Body>
-                                                                                  <h1>Teks</h1>
-                                                                              </Modal.Body>
-                                                                              {/* <Modal.Footer></Modal.Footer> */}
+                                                                               <Modal.Header className={`fit-modal-header`} 
+                                                                                  style={{backgroundColor: modalProps?.[obj_detail?.['uuid']]?.props?.['modal']?.['header']?.['backgroundColor'] ?? 'white' }}
+                                                                               >
+                                                                                   <Modal.Title className='fit-modal-title'>
+                                                                                        {modalProps?.[obj_detail?.['uuid']]?.props?.['modal']?.['header']?.['text'] ?? '' }
+                                                                                    </Modal.Title>
+                                                                               </Modal.Header>
+
+                                                                                <Modal.Body>
+                                                                                    {/* <h1>{JSON.stringify(modalProps?.[obj_detail?.['uuid']]?.props?.['loader'], null, 2)}</h1> */}
+
+                                                                                      {
+                                                                                        typeof modalProps?.[obj_detail?.['uuid']]?.props?.['loader'] !== 'undefined'
+                                                                                          && modalProps?.[obj_detail?.['uuid']]?.props?.['loader'] && 
+                                                                                        (
+                                                                                          <div className='d-flex justify-content-center align-items-center'>
+                                                                                              <Blocks
+                                                                                                    height="100"
+                                                                                                    width="100"
+                                                                                                    wrapperStyle={{}}
+                                                                                                    wrapperClass=""
+                                                                                                    visible={modalProps?.[obj_detail?.['uuid']]?.props?.['loader'] ?? false}
+                                                                                                    ariaLabel="blocks-wrapper"
+                                                                                              />
+                                                                                            </div>
+                                                                                        )
+                                                                                      }
+                                                                                </Modal.Body>
+
+                                                                                {/* <Modal.Footer></Modal.Footer> */}
                                                                           </Modal>
                                                                       </LocalizationProvider>
                                                                     )

@@ -24,19 +24,19 @@ import FormTemplateContextProv, { FormTemplateContext, FormTemplateContextInterf
 import MagnifyCustom from '../../../../components/atoms/MagnifyCustom';
 
 
-const ButtonProviderClick = ({param}) => {
-  const {dataContext, setDataContext} = useContext<FormTemplateContextInterface>(FormTemplateContext);
+// const ButtonProviderClick = ({param}) => {
+//   const {dataContext, setDataContext} = useContext<FormTemplateContextInterface>(FormTemplateContext);
 
-  return (
+//   return (
 
-    <div>
-        <ButtonPrime color='warning'
-                          label={'Provider'}
-                          onClick={()=>setDataContext({tes: param })}
-                      />
-    </div>
-  )
-}
+//     <div>
+//         <ButtonPrime color='warning'
+//                           label={'Provider'}
+//                           onClick={()=>setDataContext({tes: param })}
+//                       />
+//     </div>
+//   )
+// }
 
 
 const NestingMenu = (props:{arr_menu:any[], index:number, item:any|null}) => {
@@ -606,6 +606,55 @@ const TransaksiPenjualanForm = () => {
   const [inDataChangeState, setInDataChangeState] = useState<FormTemplateInDataChangeType>({set:[]});
   const [inConfirmDialog, setInConfirmDialog] = useState<PropConfigConfirmDialogResponse>({confirm: null}); // berikan jawaban respon ke form template yes / no (delete image or else)
 
+
+  const {contextActionClick, setContextShowModal} = useContext<FormTemplateContextInterface>(FormTemplateContext);
+
+  useEffect(()=>{
+    if (contextActionClick !== null)
+    {
+      const uuid_detail = contextActionClick?.['config_obj_detail']?.['uuid'];
+      const action_name = contextActionClick?.['action_name'];  // Edit, Delete, ...
+      const obj_action_selected_props = contextActionClick?.['action_selected_props'];  // {icon, name:'Edit', style:{backgroundColorHover:''}, tipe_form:'Custom', type:'custom_element_in_modal'}
+      const cell = contextActionClick?.['cell'];
+      const column = contextActionClick?.['column'];
+      const row = contextActionClick?.['row'];
+      const table = contextActionClick?.['table'];
+
+
+      if (typeof uuid_detail !== 'undefined' && uuid_detail !== null)
+      {
+        if (typeof action_name !== 'undefined' && action_name !== null)
+        {
+         
+            if (action_name.toString().toUpperCase() === 'EDIT')
+            {
+
+                if (setContextShowModal)
+                {
+                  setContextShowModal(prev=>{
+                    if (typeof prev !== 'undefined')
+                    {
+                      return {
+                        // ...prev,
+                        [uuid_detail]: {show:true, props:{...obj_action_selected_props ?? {}} }
+                      }
+                    }
+                    else {
+                      return {
+                        [uuid_detail]: {show:true, props:{...obj_action_selected_props ?? {}}}
+                      }
+                    }
+                  })
+                }
+            }
+            else {
+              alert('Action Delete')
+            }
+        }
+      }
+      console.log(contextActionClick);
+    }
+  },[contextActionClick])
 
   useEffect(()=>{
 
@@ -1190,6 +1239,7 @@ const TransaksiPenjualanForm = () => {
                                       }
                                       , table:{
                                           set_new_key_row_uuid:'uuid',  // nama key baru by template uuid per baris data
+                                          set_new_key_status_for_delete:'status_row', // key baru status 'DELETE' dalam tabel
                                           density:'compact',
                                           enableColumnResizing:true,
                                           data_column:[
@@ -1203,8 +1253,11 @@ const TransaksiPenjualanForm = () => {
                                                 actions:[
                                                   // {type:'custom_element_in_modal', style:{backgroundColorHover:'#abeef0'}, icon:<IconField className='pi pi-file-edit' style={{color:'#4389ff'}} />}
                                                   // ,{type:'custom_element_in_modal', style:{backgroundColorHover:'#ffd7d7'}, icon:<IconField className='pi pi-trash' style={{color:'#FF0000'}} />}
-                                                  {type:'custom_element_in_modal', style:{backgroundColorHover:'white'}, icon:<IconField className='pi pi-file-edit' style={{color:'#4389ff'}} />}
-                                                  ,{type:'custom_element_in_modal', style:{backgroundColorHover:'white'}, icon:<IconField className='pi pi-trash' style={{color:'#FF0000'}} />}
+                                                  {type:'custom_element_in_modal', name:'Edit', tipe_form:'Custom', style:{backgroundColorHover:'white'}, icon:<IconField className='pi pi-file-edit' style={{color:'#4389ff'}} />
+                                                    , modal:{enabled:true, header:{text:'Edit Item', backgroundColor:'cadetblue'}}
+                                                  }
+
+                                                  ,{type:'custom_element_in_modal', name:'Delete', tipe_form:'Custom', style:{backgroundColorHover:'white'}, icon:<IconField className='pi pi-trash' style={{color:'#FF0000'}} />}
                                                 ]
                                               }
                                             },
@@ -1357,7 +1410,7 @@ const TransaksiPenjualanForm = () => {
 
         // *** Detail Table 
         , 'edit_detail_transaksi':[
-                {kode_produk:'shell', image_product:'https://wallpapers.com/images/hd/shell-logo-red-yellow-ylhb2f0hphp6ey09-ylhb2f0hphp6ey09.png', nama_produk:'Shell', code:'SHL', '1h':0.12, '1h_trend':'naik',  harga:125000, data_trend:randomNumberArray(30), status:'Failed'}
+                {kode_produk:'shell',  image_product:'https://wallpapers.com/images/hd/shell-logo-red-yellow-ylhb2f0hphp6ey09-ylhb2f0hphp6ey09.png', nama_produk:'Shell', code:'SHL', '1h':0.12, '1h_trend':'naik',  harga:125000, data_trend:randomNumberArray(30), status:'Failed'}
                 ,{kode_produk:'pepsi', image_product:'https://awsimages.detik.net.id/community/media/visual/2019/11/22/5046d875-0493-4a5e-9057-0d402c1d841e.jpeg?w=600&q=90', nama_produk:'Pepsi', code:'PSI', '1h':'5.00', '1h_trend':'turun', data_trend:randomNumberArray(50), harga:500500.19, status:'Completed'}
                 ,{kode_produk:'dior', image_product:'https(broken tes)://i.pinimg.com/736x/e0/08/c7/e008c74ffb23fdfcdf3ffdf39ba44b9b.jpg', nama_produk:'Dior', code:'DIR', '1h':10.58, '1h_trend':'turun', harga:75000, data_trend:randomNumberArray(50), status:'Process'}
                 ,{kode_produk:'coca-cola', image_product:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4bYOCRGoYXnHFtxxvhouF4dffr6IbIFkyzg&s', nama_produk:'Coca Cola', code:'CCL',  '1h':97.23, '1h_trend':'naik', harga:15750, data_trend:randomNumberArray(50), status:'Other'}
