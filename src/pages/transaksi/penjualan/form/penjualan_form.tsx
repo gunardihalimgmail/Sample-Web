@@ -22,6 +22,8 @@ import CheckMarkAnimate from '../../../../components/atoms/FormTemplate/CheckMar
 import { IconField } from 'primereact/iconfield';
 import FormTemplateContextProv, { FormTemplateContext, FormTemplateContextInterface } from '../../../../components/atoms/FormTemplate/FormTemplateContext';
 import MagnifyCustom from '../../../../components/atoms/MagnifyCustom';
+import { Form } from 'react-bootstrap';
+import { Toast } from 'primereact/toast';
 
 
 // const ButtonProviderClick = ({param}) => {
@@ -594,6 +596,156 @@ const NestingMenu = (props:{arr_menu:any[], index:number, item:any|null}) => {
   )
 }
 
+const FormCustom:React.FC<any> = ({status, contextActionClick}) => {
+  
+  const uuid_detail = contextActionClick?.['config_obj_detail']?.['uuid'];  // uuid detail
+  
+  const cell = contextActionClick?.['cell'];
+  const name_uuid_row = contextActionClick?.['config_obj_detail']?.['table']?.['set_new_key_row_uuid'];  // nama key uuid 'uuid'
+  const uuid_row = cell?.row?.original?.[name_uuid_row];  // uuid per baris
+  
+  const action_name = contextActionClick?.['action_name'];  // Nama Icon yang di click Edit, Delete, ...
+  const obj_action_selected_props = contextActionClick?.['action_selected_props'];  // {icon, name:'Edit', style:{backgroundColorHover:''}, tipe_form:'Custom', type:'custom_element_in_modal'}
+  
+  const column = contextActionClick?.['column'];
+  const row = contextActionClick?.['row'];
+  const table = contextActionClick?.['table'];
+
+  // *** Variable Props
+  const {setContextShowModal} = useContext<FormTemplateContextInterface>(FormTemplateContext)
+  const [valueInput, setValueInput] = useState<any>({});
+  const toastProsesRef = useRef<any>();
+  const refKodeProduk = useRef<any>(null);
+
+  useEffect(()=>{
+    // setValueInput({
+    //   'kode_produk':'',
+    //   'nama_produk':''
+    // })
+  },[status])
+
+  useEffect(()=>{
+    if (refKodeProduk?.current){
+      refKodeProduk?.current?.focus();
+    }
+  },[])
+
+  const handleProses = (tipe_button:'cancel'|'save') => {
+
+    if (tipe_button === 'save')
+    {
+        let arrInvalidInput:any[] = [];
+        if (!valueInput?.['kode_produk'] ||
+              valueInput?.['kode_produk'].toString().trim() === ''
+        ){
+          arrInvalidInput = [...arrInvalidInput, 'Kode Produk'];
+        }
+
+        if (arrInvalidInput.length > 0){
+          toastProsesRef?.current.show({severity:'error', summary: 'Required'
+            , detail:`${arrInvalidInput.join(', ')} harus di-input !`, life:2000});
+          
+          return
+        }
+        
+
+    }
+
+    if (tipe_button === 'cancel')
+    {
+        setContextShowModal(prev=>{
+            return {
+              [uuid_detail]: {show:false}
+            }
+        })
+    }
+  }
+  // ------
+
+  return (
+    <>
+      <div className='row'>
+          <div className='col'>
+              <Form.Group>
+                  <Form.Label className='input-required'
+                        style={{fontFamily:'Nunito', fontWeight:'bold'}}>
+                      Kode Produk
+                  </Form.Label>
+                  <Form.Control 
+                      ref={refKodeProduk}
+                      type='text'
+                      name="name_kode_produk"
+                      placeholder='Kode Produk'
+                      value={valueInput?.["kode_produk"] ?? ''}
+                      maxLength={10}
+                      autoComplete={`off`}
+                      autoCapitalize='off'
+                      autoCorrect='off'
+                      spellCheck='false'
+                      onChange={(event)=>{
+                          setValueInput(prev=>{
+                              if (typeof prev !== 'undefined' && Object.keys(prev).length > 0)
+                              {
+                         
+                                return {...prev, 'kode_produk': event.target.value}
+                              }
+                              else {
+                                return {'kode_produk': event.target.value}
+                              }
+                          })
+                      }}
+                  />
+              </Form.Group>
+          </div>
+
+          <div className='col'>
+              <Form.Group>
+                  <Form.Label style={{fontFamily:'Nunito', fontWeight:'bold'}}>
+                      Nama Produk
+                  </Form.Label>
+                  <Form.Control 
+                      type='text'
+                      name="name_nama_produk"
+                      placeholder='Nama Produk'
+                      value={valueInput?.["nama_produk"] ?? ''}
+                      maxLength={50}
+                      autoComplete={`off`}
+                      autoCapitalize='off'
+                      autoCorrect='off'
+                      spellCheck='false'
+                      onChange={(event)=>{setValueInput(prev=>{
+                          if (typeof prev !== 'undefined')
+                          {
+                            return {...prev, 'nama_produk': event.target.value}
+                          }
+                          else {
+                            return {'nama_produk': event.target.value}
+                          }
+                      })}}
+                  />
+              </Form.Group>
+          </div>
+      </div>
+
+      <div className='row mt-4'>
+          <hr />
+          <div className='col'>
+              <div className='d-flex justify-content-end'>
+                  <ButtonPrime className='fit-btn-prime fit-btn-prime-cancel fit-btn ms-1' style={{display: 'block'}} disabled={false} label='Cancel' onClick={()=>handleProses('cancel')} loading={false} />
+                  <ButtonPrime className='fit-btn-prime fit-btn ms-1' style={{display: 'block'}} disabled={false} label='Save' onClick={()=>handleProses('save')} loading={false} severity={'info'} />
+              </div>
+          </div>
+      </div>
+
+      <Toast ref={toastProsesRef}
+              className='fit-toast-position'/>
+
+      {/* <h3>UUID Detail : {uuid_detail}</h3> */}
+      {/* <h3>UUID Row : {uuid_row}</h3> */}
+    </>
+  )
+}
+
 const TransaksiPenjualanForm = () => {
 
   const prop_config_ref = useRef<FormTemplateType[]>([]);
@@ -631,17 +783,20 @@ const TransaksiPenjualanForm = () => {
 
                 if (setContextShowModal)
                 {
+
+                  const formCustom:React.ReactElement = <FormCustom status='Edit' contextActionClick={contextActionClick}/>
+
                   setContextShowModal(prev=>{
                     if (typeof prev !== 'undefined')
                     {
                       return {
                         // ...prev,
-                        [uuid_detail]: {show:true, props:{...obj_action_selected_props ?? {}} }
+                        [uuid_detail]: {show:true, props:{...obj_action_selected_props ?? {}}, form_custom: formCustom }
                       }
                     }
                     else {
                       return {
-                        [uuid_detail]: {show:true, props:{...obj_action_selected_props ?? {}}}
+                        [uuid_detail]: {show:true, props:{...obj_action_selected_props ?? {}}, form_custom: formCustom}
                       }
                     }
                   })

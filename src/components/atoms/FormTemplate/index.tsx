@@ -701,7 +701,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
   // *** Modal ***
   // ---- {'uuid': {show:true}}
-  const [ modalProps, setModalProps ] = useState<{[uuid:string]:{show:boolean, props?:{}}}>({});
+  const [ modalProps, setModalProps ] = useState<{[uuid:string]:{show:boolean; loader:boolean; props?:{}; form_custom?:React.ReactElement}}>({});
 
   useEffect(()=>{
     console.log('---------- HIDE MODAL PROPS ')
@@ -1247,14 +1247,31 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
             const findDetailUUID = rowListTable?.[key_detail_uuid];
             if (typeof findDetailUUID !== 'undefined')
             {
-                setTimeout(()=>{
-                  setModalProps(prev=>{
-                    return {
-                      ...prev,
-                      [key_detail_uuid]: {...object_props, loader: false}
-                    }
-                  });
-                }, 100)
+                if (typeof object_props?.show !== 'undefined' 
+                    && !object_props?.show)
+                {
+                  // * jika show modal nya di false-kan, maka tidak perlu setTimeout
+                    setModalProps(prev=>{
+                      return {
+                        ...prev,
+                        [key_detail_uuid]: {...object_props, loader: false}
+                      }
+                    });
+                }
+                else 
+                {
+                    setTimeout(()=>{
+                      // - matikan loader nya 
+                      setModalProps(prev=>{
+                        return {
+                          ...prev,
+                          [key_detail_uuid]: {...object_props, loader: false}
+                        }
+                      });
+                      
+                    }, 100)
+                }
+                
 
                 break;  // keluar dari loop
             }
@@ -1326,14 +1343,14 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
                                         if (typeof modal_enabled !== 'undefined' && modal_enabled)
                                         {
-                                          setModalProps(prev=>{
-                                            return {
-                                                ...prev,
-                                                [uuid_detail]: {show: true, props:{...action_selected_props, loader: true}
-                                              }
-                                            }
-                                          });
-                                        }
+                                            setModalProps(prev=>{
+                                              return {
+                                                  ...prev,
+                                                  [uuid_detail]: {show: true, props:{...action_selected_props}, loader: true}
+                                                }
+                                              })
+                                        };
+                                        
 
 
                                         setContextActionClick({action_name, tipe_form, action_selected_props, config_obj_detail, cell, column, row, table})
@@ -8177,26 +8194,27 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
                                                                           <Modal show={modalProps?.[obj_detail?.['uuid']]?.show ?? false} 
                                                                                 backdrop={true}
+                                                                                size='lg'
                                                                                 centered={true}
                                                                                 onHide={()=>{
 
-                                                                                  let modalprops_temp = {...modalProps};
+                                                                                      // let modalprops_temp = {...modalProps};
 
-                                                                                  const detail_uuid = obj_detail?.['uuid']; // get data uuid by detail
+                                                                                      // const detail_uuid = obj_detail?.['uuid']; // get data uuid by detail
 
-                                                                                  // * Hapus property modal by uuid dari modalProps
-                                                                                  if (typeof detail_uuid !== 'undefined')
-                                                                                  {
-                                                                                      if (typeof modalprops_temp?.[detail_uuid] !== 'undefined')
-                                                                                      {
-                                                                                        delete modalprops_temp?.[detail_uuid];
-                                                                                      }
-                                                                                  }
-                                                                                  setModalProps(prev=>{
-                                                                                    return {
-                                                                                        ...modalprops_temp
-                                                                                    }
-                                                                                  })
+                                                                                      // // * Hapus property modal by uuid dari modalProps
+                                                                                      // if (typeof detail_uuid !== 'undefined')
+                                                                                      // {
+                                                                                      //     if (typeof modalprops_temp?.[detail_uuid] !== 'undefined')
+                                                                                      //     {
+                                                                                      //       delete modalprops_temp?.[detail_uuid];
+                                                                                      //     }
+                                                                                      // }
+                                                                                      // setModalProps(prev=>{
+                                                                                      //   return {
+                                                                                      //       ...modalprops_temp
+                                                                                      //   }
+                                                                                      // })
                                                                                 }}
                                                                           >
                                                                                <Modal.Header className={`fit-modal-header`} 
@@ -8211,8 +8229,8 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                     {/* <h1>{JSON.stringify(modalProps?.[obj_detail?.['uuid']]?.props?.['loader'], null, 2)}</h1> */}
 
                                                                                       {
-                                                                                        typeof modalProps?.[obj_detail?.['uuid']]?.props?.['loader'] !== 'undefined'
-                                                                                          && modalProps?.[obj_detail?.['uuid']]?.props?.['loader'] && 
+                                                                                        typeof modalProps?.[obj_detail?.['uuid']]?.loader !== 'undefined'
+                                                                                          && modalProps?.[obj_detail?.['uuid']]?.loader && 
                                                                                         (
                                                                                           <div className='d-flex justify-content-center align-items-center'>
                                                                                               <Blocks
@@ -8220,11 +8238,27 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                     width="100"
                                                                                                     wrapperStyle={{}}
                                                                                                     wrapperClass=""
-                                                                                                    visible={modalProps?.[obj_detail?.['uuid']]?.props?.['loader'] ?? false}
+                                                                                                    visible={modalProps?.[obj_detail?.['uuid']]?.loader ?? false}
                                                                                                     ariaLabel="blocks-wrapper"
                                                                                               />
                                                                                             </div>
                                                                                         )
+                                                                                      }
+
+                                                                                      {/* Load Form */}
+                                                                                      {
+                                                                                          typeof modalProps?.[obj_detail?.['uuid']]?.loader !== 'undefined'
+                                                                                          && !modalProps?.[obj_detail?.['uuid']]?.loader
+                                                                                          && 
+                                                                                          (
+                                                                                              typeof modalProps?.[obj_detail?.['uuid']]?.form_custom !== 'undefined'
+                                                                                              && modalProps?.[obj_detail?.['uuid']]?.form_custom !== null
+                                                                                              && 
+                                                                                              (
+                                                                                                  modalProps?.[obj_detail?.['uuid']]?.form_custom 
+                                                                                              )
+                                                                                          )
+                                                                                          
                                                                                       }
                                                                                 </Modal.Body>
 
