@@ -37,6 +37,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { MaterialReactTable, MRT_Cell, MRT_ColumnDef } from 'material-react-table';
 import { FormTemplateContext, FormTemplateContextInterface } from './FormTemplateContext';
 import { Tooltip } from 'primereact/tooltip';
+import { Editor } from 'primereact/editor';
 // import { format } from 'date-fns';
 
 export type FormatDateFormTemplate = 'dd MMMM yyyy'|'yyyy-MM-dd';
@@ -296,6 +297,21 @@ export type FormTemplateDataInputType = {
                                             };
                                           }
                                           |{
+                                            type:'editor';
+                                            id:string;
+                                            label:string;
+                                            name:string;
+                                            placeholder:string|null;
+                                            required?:boolean;
+                                            disabled?:boolean;
+                                            edit?:{
+                                              key_name:string;
+                                            };
+                                            save:{
+                                              key_name:string;
+                                            };
+                                          }
+                                          |{
                                             // *** PIIIS
                                             type:'fileupload-image-single';
                                             type_upload:'single'|'multiple';
@@ -524,10 +540,12 @@ interface ParamLocal{
   inConfirmDialog?:PropConfigConfirmDialogResponse;  
   outConfirmDialog?:PropConfigConfirmDialog; // konfirmasi delete atau lainnya jika ada dialog confirmation (user yang menentukan apa mau disetujui atau tidak)
 
+  outBackTo:(props:{status:boolean}) => void;
+
   [key:string]:any;
 }
 
-const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_session, status, edit_data, inDataChange, outDataChange, inConfirmDialog, outConfirmDialog, ...rest}) => {
+const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_session, status, edit_data, inDataChange, outDataChange, inConfirmDialog, outConfirmDialog, outBackTo, ...rest}) => {
 
   const {setContextActionClick, contextShowModal} = useContext<FormTemplateContextInterface>(FormTemplateContext);
 
@@ -2301,6 +2319,20 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                         }
 
                     }
+                    else if (tempFind['type'] === 'editor') {
+                      
+                        val_temp = edit_data?.[obj_key_edit];
+
+                        obj_othertext_temp = {
+                          ...obj_othertext_temp,
+                          [tempFind?.['name']]: val_temp
+                        };
+
+                        refDataChange.current = {...refDataChange.current,
+                          [tempFind['save']['key_name']]: val_temp
+                        }
+
+                    }
                     else if (tempFind['type'] === 'chips') {
                       
                         val_temp = edit_data?.[obj_key_edit];
@@ -3647,6 +3679,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
   }
 
   const changeControl = (index, save_key_name, obj_input:FormTemplateDataInputType, event?) => {
+    
+    if (objDisabled?.[index] || objDisabledForProses?.[index]){
+      return;
+    }
 
     let type_input = obj_input?.['type'] ?? null;
     if (type_input != null){
@@ -3711,6 +3747,52 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                     [obj_input?.['name']]: value_input
                 }
               })
+
+              // simpan secara global pada form template
+              refDataChange.current = {
+                ...refDataChange.current,
+                [save_key_name]: save_output === "" ? null : save_output
+              }
+
+              let edit_keyname = obj_input?.edit?.key_name;
+              if (typeof edit_keyname !== 'undefined'){
+                refDataEditChange.current = {
+                  ...refDataEditChange.current,
+                  [edit_keyname]: save_output === "" ? null : save_output
+                }
+              }
+
+              if (statusConfigFileUpload.current === true)
+              {
+                setDataToFormData('data', refDataChange.current);
+              }
+
+              // broadcast keluar form
+              outDataChange_StatusProses.current = 'process_out_change';
+              
+              outDataChange({data:{...refDataChange.current},
+                            data_with_key_edit:{...refDataEditChange.current},
+                            posisi_name_input_when_onchange: obj_input?.['name'],
+                            status_proses:'process_out_change'}
+                          ,formDataRef.current)
+
+          }
+        }
+        else if (type_input === 'editor') {
+          if (obj_input?.['save']?.['key_name']){
+            
+              let value_input = event.htmlValue;
+
+              let save_output:string|null = value_input;
+
+              setTimeout(()=>{
+                setObjInputTextOthers(prev=>{
+                  return {
+                      ...prev,
+                      [obj_input?.['name']]: value_input
+                  }
+                })
+              },100)
 
               // simpan secara global pada form template
               refDataChange.current = {
@@ -7258,11 +7340,13 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                             `${loading ? 'fit-header-none':''}`}
                                   style={{marginBottom:'20px'}}>
                               <div>
-                                  <h4 style={{fontFamily:'Nunito, Arial', fontWeight:700, fontSize:'18px', color:'#092C4C', marginBottom:'5px'}}>New Data</h4>
-                                  <h6 style={{fontWeight:400, fontSize:'14px', color:'#495057'}}>Create New Data</h6>
+                                  <h4 style={{fontFamily:'Nunito, Arial', fontWeight:700, fontSize:'18px', color:'#092C4C', marginBottom:'5px'}}>{status === 'edit' ? 'Edit' : 'New'} Data</h4>
+                                  <h6 style={{fontWeight:400, fontSize:'14px', color:'#495057'}}>{status === 'edit' ? 'Change Data Existing':'Create New Data'}</h6>
                               </div>
 
-                              <ButtonPrime style={{height:'38px', padding:'10px', boxShadow:'none', backgroundColor:'#092C4C', border:'transparent'}}>
+                              <ButtonPrime style={{height:'38px', padding:'10px', boxShadow:'none', backgroundColor:'#092C4C', border:'transparent'}}
+                                  onClick={()=>outBackTo({status:true})}
+                              >
                                   <IconField className='pi pi-arrow-left ' style={{marginLeft:'5px', marginRight:'10px', fontSize:'12px'}} />
                                   <span style={{fontSize:'14px',fontWeight:700, fontFamily:'Nunito'}}>Back to List</span>
                               </ButtonPrime>
@@ -7412,6 +7496,76 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                                                   spellCheck='false'
                                                                                                                                   onChange={(event)=>changeControl(obj_input?.['index'], obj_input?.['save']?.['key_name'], obj_input, event)}
                                                                                                                                   />
+                                                                                                            </div>
+                  
+                                                                                                              {
+                                                                                                                  obj_input?.['required'] &&
+                                                                                                                  invalidInput?.[obj_input?.['index']] && (
+                                                                                                                      <div className={`d-flex justify-content-end mt-1`}>
+                                                                                                                          <Message severity='error' text={`${invalidInput?.[obj_input?.['index']]}`} className='fit-message-custom' />
+                                                                                                                      </div>
+                                                                                                                  )
+                                                                                                              }
+                                                                                                        </Form.Group>
+                  
+                                                                                                    )
+                                                                                                  }
+
+                                                                                                  {
+                                                                                                    obj_input['type'] == 'editor' && (
+                  
+                                                                                                        <Form.Group className={`mb-2`}>
+
+
+                                                                                                              <div>
+
+                                                                                                                <Form.Label className={`mb-1 fit-dash-modal-form-label `+
+                                                                                                                                      ` ${obj_input?.['required'] ? 'required' : ''}`}>{obj_input['label']}</Form.Label>
+                                                                                                                
+                                                                                                                {
+                                                                                                                  // * Jika disabled, maka gunakan editor yang terkunci
+                                                                                                                    (objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']])
+                                                                                                                    && (
+                                                                                                                          <Editor 
+                                                                                                                              ref={inputRefs[obj_input?.['index']]}
+                                                                                                                              className='fit-editor'
+                                                                                                                              name={obj_input['name']}
+                                                                                                                              placeholder={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']] ? '' : obj_input['placeholder']?.toString()} // jika disabled, maka placeholder di kosongkan
+                                                                                                                              style={{
+                                                                                                                                  height:'220px',
+                                                                                                                                  backgroundColor:'red'
+                                                                                                                              }}
+                                                                                                                              disabled={true}
+                                                                                                                              readOnly={true}
+                                                                                                                              value={objInputTextOthers?.[obj_input?.['name']] ?? ''}
+                                                                                                                          />
+                                                                                                                    )
+                                                                                                                }
+
+                                                                                                                {
+                                                                                                                  // * Jika tidak disabled, maka pakai yang di bawah ini
+                                                                                                                  !objDisabled?.[obj_input?.['index']] && !objDisabledForProses?.[obj_input?.['index']]
+                                                                                                                  && (
+                                                                                                                    <Editor 
+                                                                                                                        ref={inputRefs[obj_input?.['index']]}
+                                                                                                                        className='fit-editor'
+                                                                                                                        name={obj_input['name']}
+                                                                                                                        placeholder={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']] ? '' : obj_input['placeholder']?.toString()} // jika disabled, maka placeholder di kosongkan
+                                                                                                                        style={{
+                                                                                                                            height:'220px'
+                                                                                                                        }}
+                                                                                                                        disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
+                                                                                                                        readOnly={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
+                                                                                                                        value={objInputTextOthers?.[obj_input?.['name']] ?? ''}
+                                                                                                                        onTextChange={(event)=>changeControl(obj_input?.['index'], obj_input?.['save']?.['key_name'], obj_input, event)}
+                                                                                                                        onBlur={()=>funcBlurInput(obj_input?.['index'], obj_input)}
+                                                                                                                    />
+
+                                                                                                                  )
+                                                                                                                }
+
+                                                                                                                
+
                                                                                                             </div>
                   
                                                                                                               {

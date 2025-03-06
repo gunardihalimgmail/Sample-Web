@@ -1124,6 +1124,19 @@ const TransaksiPenjualanForm = () => {
                                               }
                                             }
                                             ,{
+                                              type:'editor',
+                                              id:'id_content',
+                                              name:'name_content',
+                                              label:'Content',
+                                              placeholder:'Input Content',
+                                              save:{
+                                                key_name:'content'
+                                              },
+                                              edit:{
+                                                key_name:'content'
+                                              }
+                                            }
+                                            ,{
                                               type:'fileupload-image-single',
                                               type_upload:'single',
                                               class:'mt-0',
@@ -1570,6 +1583,8 @@ const TransaksiPenjualanForm = () => {
                 ,{kode_produk:'dior', image_product:'https(broken tes)://i.pinimg.com/736x/e0/08/c7/e008c74ffb23fdfcdf3ffdf39ba44b9b.jpg', nama_produk:'Dior', code:'DIR', '1h':10.58, '1h_trend':'turun', harga:75000, data_trend:randomNumberArray(50), status:'Process'}
                 ,{kode_produk:'coca-cola', image_product:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4bYOCRGoYXnHFtxxvhouF4dffr6IbIFkyzg&s', nama_produk:'Coca Cola', code:'CCL',  '1h':97.23, '1h_trend':'naik', harga:15750, data_trend:randomNumberArray(50), status:'Other'}
           ]
+
+        , 'content':'Halo Dunia'
     })
 
     setTimeout(()=>{
@@ -1871,6 +1886,11 @@ const TransaksiPenjualanForm = () => {
     return numbers;
   }
 
+  const outBackTo = ({status}) => {
+      if (status){
+        alert("Back To List")
+      }
+  }
 
   return (
     // <FormTemplateContextProv>
@@ -2055,6 +2075,8 @@ const TransaksiPenjualanForm = () => {
 
                         inConfirmDialog={inConfirmDialog}
                         outConfirmDialog={outConfirmDialogHandle}
+
+                        outBackTo={outBackTo}
                     />
                 </>
             )

@@ -725,3 +725,14 @@
   text-shadow: 1px 2px 5px black;
   font-family: 'Nunito';
 }
+
+// disabled editor
+.fit-editor.p-editor-container{
+    &[disabled] {
+      .p-editor-content {
+        .ql-editor {
+          background-color: #e9ecef !important;
+        }  
+      } 
+    }
+}
