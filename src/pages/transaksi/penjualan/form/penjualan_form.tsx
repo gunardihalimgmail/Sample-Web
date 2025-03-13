@@ -1389,7 +1389,6 @@ const TransaksiPenjualanForm = () => {
                                               }
                                             }
                                             
-                                            
                                           ]
                                         }
                                         

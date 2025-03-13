@@ -1053,7 +1053,12 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
                       const uuid_gen = uuidv7();
                       // * id unik setiap detail
-                      temp_detail['uuid'] = uuid_gen;
+                      // *** hanya generate uuid per detail section jika belum ada uuid nya
+                      const temp_detail_uuid = temp_detail?.['uuid'];  // uuid per detail section
+                      if (typeof temp_detail_uuid === 'undefined' || temp_detail_uuid === null)
+                      {
+                        temp_detail['uuid'] = uuid_gen;
+                      }
 
                       // simpan property modal detail by uuid
                       if (typeof modalprops_temp?.['uuid'] === 'undefined'){
@@ -2759,10 +2764,18 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                     // *** Generate uuid per row data detail
                                                     let data_temp:any[] = [];
                                                     data_temp = detail_data.map((item, idx)=>{
-                                                      return {
-                                                        ...item,
-                                                        [detail_table_setkeyrow_uuid]: uuidv7()
-                                                      }
+
+                                                        let uuid_per_row = detail_data?.[detail_table_setkeyrow_uuid];
+                                                        if (typeof uuid_per_row !== 'undefined' && uuid_per_row !== null)
+                                                        {
+                                                            return {...item}
+                                                        }
+                                                        else {
+                                                            return {
+                                                              ...item,
+                                                              [detail_table_setkeyrow_uuid]: uuidv7()
+                                                            }
+                                                        }
                                                     })
 
                                                     // * set ke table view berdasarkan uuid
@@ -6065,22 +6078,49 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                   attr_value_selected_not_empty = file_inlist_cid;
               }
 
-              // Hapus dari refDataEditChange
+              // // Update dari refDataEditChange
+              // if (temp_data_edit_change.length > 0)
+              // {
+              //     let findIdxinEdit = temp_data_edit_change.findIndex((val,idx)=>val?.[attr_key_selected_not_empty] === attr_value_selected_not_empty);
+                  
+              //     if (findIdxinEdit !== -1){
+              //       temp_data_edit_change.splice(findIdxinEdit, 1)
+              //     }
+              // }
+
               if (temp_data_edit_change.length > 0)
               {
-                  let findIdxinEdit = temp_data_edit_change.findIndex((val,idx)=>val?.[attr_key_selected_not_empty] === attr_value_selected_not_empty);
-                  
-                  if (findIdxinEdit !== -1){
-                    temp_data_edit_change.splice(findIdxinEdit, 1)
+                  let findInEdit = temp_data_edit_change.find((val,idx)=>val?.[attr_key_selected_not_empty] === attr_value_selected_not_empty);
+                  if (findInEdit)
+                  {
+                    let posisi_edit_index_item = temp_data_edit_change.indexOf(findInEdit);
+                    if (posisi_edit_index_item !== -1)
+                    {
+                        const edit_id = findInEdit?.['id'];
+                        if (edit_id === null)
+                        {
+                          // * jika tidak ada id berarti item baru, sehingga tinggal dihapus permanen saja
+                            temp_data_edit_change.splice(posisi_edit_index_item, 1);
+                        }
+                        else if (edit_id !== null)
+                        {
+                          // * jika ada id berarti update status jadi 'DELETE' (samakan kondisi seperti refDataChange)
+                            temp_data_edit_change[posisi_edit_index_item]['status'] = 'DELETE';
+                        }
+                    }
                   }
+
               }
-              // ---
+
+              // // ---
 
               // * Jika ada salah satu 'id' atau 'cid', maka di proses
 
               if (attr_key_selected_not_empty !== null && 
                   attr_key_selected_not_empty !== '')
               {
+
+                  // Update di refDataChange
                   let find_item_byid = temp_data_change.find(item=>{
                   
                       const data_item = item?.[attr_key_selected_not_empty];
@@ -6547,6 +6587,12 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
           if (element_section.clientHeight !== 0){
               item_section.element.style.height = '0px';
+              item_section.element.style.overflow = 'hidden';
+
+              setTimeout(()=>{
+                item_section.element.style.overflow = 'hidden';
+              },350)
+                
 
               // ** Panah ke atas (Tutup)
               if (butTargetSpanArrow){
@@ -6559,6 +6605,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
           }
           else if (element_section.clientHeight === 0) {
               element_section.style.height = firstChildHTMLEle.clientHeight + 'px';
+              setTimeout(()=>{
+                // * overflow di set ke visible, agar kalau ada element yang absolute seperti date picker tetap tidak terpotong
+                element_section.style.overflow = 'visible';
+              },350)
 
               // ** Panah ke bawah (Buka)
               if (butTargetSpanArrow){
@@ -7415,7 +7465,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                 }
 
                                                 {/* --- */}
-                                                <div className='fit-section-input-cont' style={{overflow:'hidden', paddingInline:'5px'}}>
+                                                <div className='fit-section-input-cont' style={{overflow:'visible', paddingInline:'5px'}}>
 
                                                     <div className={`row ${obj_section?.['class_add'] ?? ''}`}
                                                         >
@@ -7585,7 +7635,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                     obj_input['type'] === 'date' && (
                                                                                                       <Form.Group className={`mb-2`}>
 
-                                                                                                        
+                                                                                                          
                                                                                                           <div className={`${
                                                                                                                             ((typeof obj_input?.style?.input_group?.enabled !== 'undefined' && obj_input?.style?.input_group?.enabled === true) &&
                                                                                                                             (typeof obj_input?.style?.input_group?.display?.mobile !== 'undefined' && obj_input?.style?.input_group?.display?.mobile === true)) 
@@ -7606,6 +7656,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                                     ) ? 'auto':''
                                                                                                                 }}
                                                                                                             >
+                                                                                                              
                                                                                                                   
                                                                                                               <Form.Label className={`mb-1 fit-dash-modal-form-label`+
                                                                                                                                         ` ${
@@ -7624,7 +7675,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
                                                                                                                       {/* <DateRangeRounded className={`${styles['ppe-anly-datepicker-icon']}`}/> */}
                                                                                                                       <span className={`pi pi-calendar-clock ${styles['ppe-anly-datepicker-icon']}`}></span>
-
+                                                                                                                      
                                                                                                                       <div className={`d-flex align-items-stretch ppe-anly-datepicker-parent fit-input-date-theme-amber`}>
                                                                                                                           <ReactDatePicker 
                                                                                                                                 ref={inputRefs[obj_input?.['index']]}
