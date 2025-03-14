@@ -445,6 +445,7 @@ type FormTemplate_DetailTable = {
 }
 
 type FormTemplate_Detail = {
+    type:'section_detail';
     name:string;  // harus unik setiap detail
     title:string;
     icon?:React.ReactElement;
@@ -715,11 +716,14 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
   const [arrConfigDetail, setArrConfigDetail] = useState<{[name:string]:FormTemplate_DetailTable[]}>({});
   const arrConfigDetailRef = useRef<{[name:string]:FormTemplate_Detail}>({});
 
+  
   const [statusWindowMobile, setStatusWindowMobile] = useState<boolean>(false);
-
+  
   // *** Modal ***
   // ---- {'uuid': {show:true}}
   const [ modalProps, setModalProps ] = useState<{[uuid:string]:{show:boolean; loader:boolean; props?:{}; form_custom?:React.ReactElement}}>({});
+  const modalprops_temp_ref = useRef<{[uuid:string]:any}>({});  // {'uuid':{show:boolean, ...}}
+
 
   useEffect(()=>{
     console.log('---------- HIDE MODAL PROPS ')
@@ -966,6 +970,39 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
   // *** Function Generate All Index Input, Update to Object
   const generateIndexAllInput = async(template:FormTemplateType[]) => {
+
+    const rekursif_UpdateIDForDetail = (temp_detail:any) => {
+
+        if (typeof temp_detail === 'object' && temp_detail !== null)
+        {
+            Object.entries(temp_detail).forEach(([key_detail, val_detail])=>{
+                if (key_detail === 'type' && val_detail === 'section_detail')
+                {
+                      // * id unik setiap detail
+                      // *** hanya generate uuid per detail section jika belum ada uuid nya
+                      const temp_detail_uuid = temp_detail?.['uuid'];  // uuid per detail section
+                      if (typeof temp_detail_uuid === 'undefined' || temp_detail_uuid === null)
+                      {
+                          const uuid_gen = uuidv7();
+                          temp_detail['uuid'] = uuid_gen;
+
+                          // * simpan property modal detail by uuid
+                          // * default show modal dibuat false
+                          if (typeof modalprops_temp_ref.current?.['uuid'] === 'undefined'){
+                            modalprops_temp_ref.current = {
+                                ...modalprops_temp_ref.current,
+                                [uuid_gen]: {show: false}
+                            }
+                          }
+                      }
+                }
+                else if (typeof val_detail === 'object'){
+                    rekursif_UpdateIDForDetail(val_detail);
+                }
+            })
+        }
+
+    }
     
     // *** Update Index All Input
     let idx_all_input = 0;
@@ -1051,22 +1088,24 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
                   temp_section?.detail.forEach((temp_detail:FormTemplate_Detail, idx_detail)=>{
 
-                      const uuid_gen = uuidv7();
-                      // * id unik setiap detail
-                      // *** hanya generate uuid per detail section jika belum ada uuid nya
-                      const temp_detail_uuid = temp_detail?.['uuid'];  // uuid per detail section
-                      if (typeof temp_detail_uuid === 'undefined' || temp_detail_uuid === null)
-                      {
-                        temp_detail['uuid'] = uuid_gen;
-                      }
+                      // const uuid_gen = uuidv7();
+                      // // * id unik setiap detail
+                      // // *** hanya generate uuid per detail section jika belum ada uuid nya
+                      // const temp_detail_uuid = temp_detail?.['uuid'];  // uuid per detail section
+                      // if (typeof temp_detail_uuid === 'undefined' || temp_detail_uuid === null)
+                      // {
+                      //   temp_detail['uuid'] = uuid_gen;
+                      // }
 
-                      // simpan property modal detail by uuid
-                      if (typeof modalprops_temp?.['uuid'] === 'undefined'){
-                        modalprops_temp = {
-                            ...modalprops_temp,
-                            [uuid_gen]: {show: false}
-                        }
-                      }
+                      // // simpan property modal detail by uuid
+                      // if (typeof modalprops_temp?.['uuid'] === 'undefined'){
+                      //   modalprops_temp = {
+                      //       ...modalprops_temp,
+                      //       [uuid_gen]: {show: false}
+                      //   }
+                      // }
+
+                      rekursif_UpdateIDForDetail(temp_detail); // update uuid untuk semua detail section sampai nesting ke anak nya 
     
                       // simpan 'name' ke variabel untuk di cek duplikasi nya
                       if (temp_detail?.name){
@@ -1081,6 +1120,8 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                             [temp_detail?.['name']]: {...temp_detail}
                       }
                   });
+
+                  modalprops_temp = {...modalprops_temp_ref.current};
 
                   setModalProps({...modalprops_temp});
                   // alert(JSON.stringify(modalprops_temp,null,2))

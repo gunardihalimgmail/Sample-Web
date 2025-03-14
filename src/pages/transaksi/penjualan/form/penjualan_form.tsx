@@ -1395,6 +1395,7 @@ const TransaksiPenjualanForm = () => {
                                       ]
                                   , detail:[
                                     {
+                                      type:'section_detail',
                                       name:'name_detail_transaksi', // harus unik antar detail - name
                                       title:'Detail',
                                       icon:<IconField className='pi pi-table' style={{color:'#4389ff'}} />
