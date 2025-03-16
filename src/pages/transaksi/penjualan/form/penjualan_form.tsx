@@ -612,10 +612,22 @@ const FormCustom:React.FC<any> = ({status, contextActionClick}) => {
   const table = contextActionClick?.['table'];
 
   // *** Variable Props
-  const {setContextShowModal} = useContext<FormTemplateContextInterface>(FormTemplateContext)
+  const {setContextShowModal, setContextDataOperation} = useContext<FormTemplateContextInterface>(FormTemplateContext)
   const [valueInput, setValueInput] = useState<any>({});
   const toastProsesRef = useRef<any>();
   const refKodeProduk = useRef<any>(null);
+
+  useEffect(()=>{
+    if (typeof action_name !== 'undefined' && action_name === 'Edit')
+    {
+        const kode_produk = cell?.row.original?.['kode_produk'];
+        const nama_produk = cell?.row.original?.['nama_produk'];
+        setValueInput({
+          'kode_produk': kode_produk,
+          'nama_produk': nama_produk
+        })
+    }
+  },[contextActionClick])
 
   useEffect(()=>{
     // setValueInput({
@@ -646,6 +658,25 @@ const FormCustom:React.FC<any> = ({status, contextActionClick}) => {
             , detail:`${arrInvalidInput.join(', ')} harus di-input !`, life:2000});
           
           return
+        }
+
+        const obj_refDataChange = {
+            'kode_produk': valueInput?.['kode_produk'],
+            'nama_produk': valueInput?.['nama_produk']
+        }
+
+        const obj_refDataEditChange = {
+            'kode_produk': valueInput?.['kode_produk'],
+            'nama_produk': valueInput?.['nama_produk']
+        }
+
+        if (action_name.toString().toUpperCase() === 'EDIT')
+        {
+
+            setContextDataOperation({type:'Edit'
+                                      , id_detail: uuid_detail, id_row: uuid_row
+                                      , refDataChange: {...obj_refDataChange}
+                                      , refDataEditChange:{...obj_refDataEditChange}});
         }
         
 
@@ -791,12 +822,12 @@ const TransaksiPenjualanForm = () => {
                     {
                       return {
                         // ...prev,
-                        [uuid_detail]: {show:true, props:{...obj_action_selected_props ?? {}}, form_custom: formCustom }
+                        [uuid_detail]: {show:true, props:{...obj_action_selected_props ?? {}}, form:{type:'Custom', form_custom: formCustom}  }
                       }
                     }
                     else {
                       return {
-                        [uuid_detail]: {show:true, props:{...obj_action_selected_props ?? {}}, form_custom: formCustom}
+                        [uuid_detail]: {show:true, props:{...obj_action_selected_props ?? {}}, form:{type:'Custom', form_custom: formCustom}}
                       }
                     }
                   })
@@ -1406,6 +1437,7 @@ const TransaksiPenjualanForm = () => {
                                           key_name: 'detail_transaksi'
                                       }
                                       , table:{
+                                          set_new_key_row_id_edit:'id',
                                           set_new_key_row_uuid:'uuid',  // nama key baru by template uuid per baris data
                                           set_new_key_status_for_delete:'status_row', // key baru status 'DELETE' dalam tabel
                                           density:'compact',
@@ -1578,10 +1610,10 @@ const TransaksiPenjualanForm = () => {
 
         // *** Detail Table 
         , 'edit_detail_transaksi':[
-                {kode_produk:'shell',  image_product:'https://wallpapers.com/images/hd/shell-logo-red-yellow-ylhb2f0hphp6ey09-ylhb2f0hphp6ey09.png', nama_produk:'Shell', code:'SHL', '1h':0.12, '1h_trend':'naik',  harga:125000, data_trend:randomNumberArray(30), status:'Failed'}
-                ,{kode_produk:'pepsi', image_product:'https://awsimages.detik.net.id/community/media/visual/2019/11/22/5046d875-0493-4a5e-9057-0d402c1d841e.jpeg?w=600&q=90', nama_produk:'Pepsi', code:'PSI', '1h':'5.00', '1h_trend':'turun', data_trend:randomNumberArray(50), harga:500500.19, status:'Completed'}
-                ,{kode_produk:'dior', image_product:'https(broken tes)://i.pinimg.com/736x/e0/08/c7/e008c74ffb23fdfcdf3ffdf39ba44b9b.jpg', nama_produk:'Dior', code:'DIR', '1h':10.58, '1h_trend':'turun', harga:75000, data_trend:randomNumberArray(50), status:'Process'}
-                ,{kode_produk:'coca-cola', image_product:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4bYOCRGoYXnHFtxxvhouF4dffr6IbIFkyzg&s', nama_produk:'Coca Cola', code:'CCL',  '1h':97.23, '1h_trend':'naik', harga:15750, data_trend:randomNumberArray(50), status:'Other'}
+                {id:'1', kode_produk:'shell',  image_product:'https://wallpapers.com/images/hd/shell-logo-red-yellow-ylhb2f0hphp6ey09-ylhb2f0hphp6ey09.png', nama_produk:'Shell', code:'SHL', '1h':0.12, '1h_trend':'naik',  harga:125000, data_trend:randomNumberArray(30), status:'Failed'}
+                ,{id:'2', kode_produk:'pepsi', image_product:'https://awsimages.detik.net.id/community/media/visual/2019/11/22/5046d875-0493-4a5e-9057-0d402c1d841e.jpeg?w=600&q=90', nama_produk:'Pepsi', code:'PSI', '1h':'5.00', '1h_trend':'turun', data_trend:randomNumberArray(50), harga:500500.19, status:'Completed'}
+                ,{id:'3', kode_produk:'dior', image_product:'https(broken tes)://i.pinimg.com/736x/e0/08/c7/e008c74ffb23fdfcdf3ffdf39ba44b9b.jpg', nama_produk:'Dior', code:'DIR', '1h':10.58, '1h_trend':'turun', harga:75000, data_trend:randomNumberArray(50), status:'Process'}
+                ,{id:'4', kode_produk:'coca-cola', image_product:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4bYOCRGoYXnHFtxxvhouF4dffr6IbIFkyzg&s', nama_produk:'Coca Cola', code:'CCL',  '1h':97.23, '1h_trend':'naik', harga:15750, data_trend:randomNumberArray(50), status:'Other'}
           ]
 
         , 'content':'Halo Dunia'

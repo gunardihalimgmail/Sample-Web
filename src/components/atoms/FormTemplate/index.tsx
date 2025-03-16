@@ -312,7 +312,6 @@ export type FormTemplateDataInputType = {
                                             };
                                           }
                                           |{
-                                            // *** PIIIS
                                             type:'fileupload-image-single';
                                             type_upload:'single'|'multiple';
                                             multiple_props?:{
@@ -450,6 +449,7 @@ type FormTemplate_Detail = {
     title:string;
     icon?:React.ReactElement;
     table?:{
+      set_new_key_row_id_edit:string;  // nama key id existing dari edit (tujuan: jika ada id, maka saat di 'delete' kolom status di update 'DELETE', jika 'edit' maka kolom id di pertahankan)
       set_new_key_row_uuid:string;  // nama key generate otomatis by template sebagai uuid per baris data
       set_new_key_status_for_delete:string;   // name key baru sebagai 'status' jika ada 'DELETE' row data
       density?:'comfortable' | 'compact' | 'spacious';
@@ -548,7 +548,7 @@ interface ParamLocal{
 
 const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_session, status, edit_data, inDataChange, outDataChange, inConfirmDialog, outConfirmDialog, outBackTo, ...rest}) => {
 
-  const {setContextActionClick, contextShowModal} = useContext<FormTemplateContextInterface>(FormTemplateContext);
+  const {setContextActionClick, contextShowModal, contextDataOperation} = useContext<FormTemplateContextInterface>(FormTemplateContext);
 
 
   // outDataChange -> output result to other form
@@ -721,8 +721,116 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
   
   // *** Modal ***
   // ---- {'uuid': {show:true}}
-  const [ modalProps, setModalProps ] = useState<{[uuid:string]:{show:boolean; loader:boolean; props?:{}; form_custom?:React.ReactElement}}>({});
+  const [ modalProps, setModalProps ] = useState<{[uuid:string]:{show:boolean; loader:boolean; form?:{type:'Custom', form_custom:React.ReactElement}|{type:'Template'}, props?:{} }}>({});
   const modalprops_temp_ref = useRef<{[uuid:string]:any}>({});  // {'uuid':{show:boolean, ...}}
+
+  // * id (detail dan row) baris data dalam table yang di pilih
+  const detailTableSelectedRef = useRef<{id_detail:string, id_row:string, config_obj_detail:any}>({id_detail:'', id_row:'', config_obj_detail:{}});
+  // *** PIIIS (POSISI VARIABEL)
+
+  
+  useEffect(()=>{
+    if (typeof contextDataOperation !== 'undefined')
+    {
+      const modal_id_detail = contextDataOperation?.['id_detail'];
+    
+      // * Jika data row ada dalam rowList, maka diteruskan operasi CRUD nya.
+      const rowList = rowListTable?.[modal_id_detail];
+      if (typeof rowList !== 'undefined') 
+      {
+          // * EDIT
+          if (contextDataOperation?.type === 'Edit')
+          {
+              const modal_id_row = contextDataOperation?.id_row;  // uuid per row
+              if (typeof modal_id_row !== 'undefined' && modal_id_row !== null)
+              {
+
+                    // * Bandingkan dahulu apa cocok dengan lokasi form dari detailTableSelectedRef (table ter-select)
+                    const detailTableSelected_idDetail = detailTableSelectedRef.current?.id_detail;
+                    const detailTableSelected_idRow = detailTableSelectedRef.current?.id_row;
+                    if (typeof detailTableSelected_idDetail !== 'undefined' && detailTableSelected_idDetail !== null
+                        && typeof detailTableSelected_idRow !== 'undefined' && detailTableSelected_idRow !== null
+                    )
+                    {
+                        if (detailTableSelected_idDetail === modal_id_detail
+                              && detailTableSelected_idRow === modal_id_row
+                        )
+                        {
+                            const name_uuid_row = detailTableSelectedRef.current?.config_obj_detail?.['table']?.['set_new_key_row_uuid'];
+
+                            if (typeof name_uuid_row !== 'undefined')
+                            {
+                                const findItem = rowList.find((obj, idx)=>obj?.[name_uuid_row] === modal_id_row);
+                                if (findItem){
+
+                                    const name_id_edit_row = detailTableSelectedRef.current?.config_obj_detail?.['table']?.['set_new_key_row_id_edit'];  
+
+                                    // * set UUID row ke obj_new_row
+                                    let obj_new_row = {};
+                                    obj_new_row = {...obj_new_row, [name_uuid_row]: modal_id_row};
+
+                                    // * set ID row ke obj_new_row
+                                    const itemIDExist = findItem?.[name_id_edit_row];
+                                    if (typeof itemIDExist !== 'undefined' && itemIDExist !== null)
+                                    {
+                                        obj_new_row = {...obj_new_row, [name_id_edit_row]: itemIDExist}
+                                    }
+                                    
+                                    // * set data dari modal ke obj_new_row
+                                    const refDataEdit_temp = contextDataOperation?.refDataEditChange;
+                                    if (typeof refDataEdit_temp === 'object' 
+                                        && Object.keys(refDataEdit_temp).length > 0)
+                                    {
+                                        obj_new_row = {
+                                            ...obj_new_row,
+                                            ...refDataEdit_temp
+                                        }
+                                    }
+
+                                    const findIndex = rowList.indexOf(findItem);
+                                    if (findIndex !== -1)
+                                    {
+                                      // * update data ke setRowListTable (sudah dependent)
+                                        rowList.splice(findIndex, 1, {...obj_new_row});
+                                        console.error('Tes')
+                                        console.log(rowList)
+
+                                        // * Task : Update ke refDataChange & refDataEditChange
+                                        // ..........
+
+
+                                        // * Close Modal
+
+                                        setModalProps(prev=>{
+                                          return {
+                                            ...prev,
+                                            [modal_id_detail]: {...prev[modal_id_detail], show: false}
+                                          }
+                                        })
+
+                                        toastProsesRef?.current.show({severity:'success', summary: 'Success', detail:`Data Berhasil di Simpan !`, life:2000});
+                                    }
+                                    
+
+                                    // alert(itemIDExist)
+                                    // alert(name_id_edit_row)
+                                    // alert(JSON.stringify(obj_new_row, null, 2))
+                                }
+                            }
+                            
+
+                        }
+                    }
+
+
+                  // const findItem = rowList.find((obj, idx)=>obj?.[modal_id_row] === )
+              }
+          
+          }
+          // alert(JSON.stringify(contextDataOperation,null,2))
+      }
+    }
+  },[contextDataOperation])
 
 
   useEffect(()=>{
@@ -1314,6 +1422,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                 if (typeof object_props?.show !== 'undefined' 
                     && !object_props?.show)
                 {
+
                   // * jika show modal nya di false-kan, maka tidak perlu setTimeout
                     setModalProps(prev=>{
                       return {
@@ -1407,15 +1516,30 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
 
                                         if (typeof modal_enabled !== 'undefined' && modal_enabled)
                                         {
-                                            setModalProps(prev=>{
-                                              return {
-                                                  ...prev,
-                                                  [uuid_detail]: {show: true, props:{...action_selected_props}, loader: true}
-                                                }
-                                              })
+                                            if (tipe_form === 'Custom')
+                                            {
+                                              setModalProps(prev=>{
+                                                return {
+                                                    ...prev,
+                                                    [uuid_detail]: {show: true, props:{...action_selected_props}, loader: true}
+                                                  }
+                                                })
+                                            }
                                         };
-                                        
 
+
+                                        const name_uuid_row = config_obj_detail?.['table']?.['set_new_key_row_uuid'];
+                                        const uuid_row = cell.row.original?.[name_uuid_row];
+
+                                        // * Set id detail dan id row ke dalam variabel sebagai pembanding baris mana yang dipilih
+                                        if (typeof uuid_detail !== 'undefined' && uuid_detail !== null 
+                                            && typeof uuid_row !== 'undefined' && uuid_row !== null)
+                                        {
+                                            detailTableSelectedRef.current = {
+                                                id_detail: uuid_detail, id_row: uuid_row
+                                                , config_obj_detail: {...config_obj_detail}
+                                            }
+                                        }
 
                                         setContextActionClick({action_name, tipe_form, action_selected_props, config_obj_detail, cell, column, row, table})
                                     }
@@ -1587,24 +1711,34 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                       return (
                                         <div className='d-flex align-items-center gap-2'>
                                             {
+                                              // typeof url_final !== 'undefined'
                                               url_final !== null && (
                                                 <div>
                                                     <img onError={(e:any)=>{
-                                                      // jika error, maka pakai image yang 'image broken'
-                                                      e.target.onerror = null;
-                                                      e.target.src = "https://cdn-icons-png.flaticon.com/128/10300/10300986.png";
-                                                      e.target.style.borderRadius = "0";
-                                                    }} src={url_final.toString()} width={30} height={30} style={{borderRadius:'50%'}} />
+                                                        // jika error, maka pakai image yang 'image broken'
+                                                        e.target.onerror = null;
+                                                        e.target.src = "https://cdn-icons-png.flaticon.com/128/10300/10300986.png";
+                                                        e.target.style.borderRadius = "0";
+                                                      }} 
+
+                                                      src={url_final ?? "https://cdn-icons-png.flaticon.com/128/10300/10300986.png"} width={30} height={30} style={{borderRadius:'50%'}} />
                                                 </div>
                                               )
                                             }
 
                                             <div>
-                                              <span style={{fontWeight:'bold'}}>{label_final.toString()}</span>
+                                              {
+                                                typeof label_final !== 'undefined'
+                                                && label_final !== null
+                                                && (
+                                                  <span style={{fontWeight:'bold'}}>{label_final.toString()}</span>
+                                                )
+                                              }
                                             </div>
 
                                             {
-                                              suffix_final !== null && (
+                                              typeof suffix_final !== 'undefined'
+                                              && suffix_final !== null && (
                                                 <div>
                                                     <span style={{fontWeight:800,fontSize:'15px',color:'darkgrey'}}>{suffix_final.toString()}</span>
                                                 </div>
@@ -1645,27 +1779,38 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                       }
 
                                       return (
-                                              <Trend 
-                                                data={Array.isArray(get_value) ? get_value : []} 
-                                                strokeWidth={4}
-                                                strokeLinecap={'butt'}
+                                              <>
+                                              {
+                                                  typeof get_value !== 'undefined' 
+                                                  && Array.isArray(get_value)
+                                                  && (
 
-                                                height={40} 
-                                  
-                                                radius={0}
-                                                smooth
-                                  
-                                                // gradient={['#0ff','#0F0', '#FF0']}
-                                                gradient={typeof comparison_start_end !== 'undefined' ? 
-                                                              up_down === 'down' ? ['orange','red', '#FF0'] :
-                                                                  up_down === 'up' ? ['#0ff','#0F0', '#0F0'] : ['#000']
-                                                              : ['#000']
-                                                        }
-                                  
-                                                autoDraw
-                                                autoDrawDuration={500}
-                                                autoDrawEasing='ease-in'
-                                                />
+                                                      <Trend 
+                                                        data={Array.isArray(get_value) ? get_value : []} 
+                                                        strokeWidth={4}
+                                                        strokeLinecap={'butt'}
+        
+                                                        height={40} 
+                                          
+                                                        radius={0}
+                                                        smooth
+                                          
+                                                        // gradient={['#0ff','#0F0', '#FF0']}
+                                                        gradient={typeof comparison_start_end !== 'undefined' ? 
+                                                                      up_down === 'down' ? ['orange','red', '#FF0'] :
+                                                                          up_down === 'up' ? ['#0ff','#0F0', '#0F0'] : ['#000']
+                                                                      : ['#000']
+                                                                }
+                                          
+                                                        autoDraw
+                                                        autoDrawDuration={500}
+                                                        autoDrawEasing='ease-in'
+                                                        />
+                                                  )
+
+                                              }
+                                              </>
+                                              
                                       )
                                     }
 
@@ -8497,11 +8642,13 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                           && !modalProps?.[obj_detail?.['uuid']]?.loader
                                                                                           && 
                                                                                           (
-                                                                                              typeof modalProps?.[obj_detail?.['uuid']]?.form_custom !== 'undefined'
-                                                                                              && modalProps?.[obj_detail?.['uuid']]?.form_custom !== null
-                                                                                              && 
+                                                                                              typeof modalProps?.[obj_detail?.['uuid']]?.form?.type !== 'undefined' &&
+                                                                                              modalProps?.[obj_detail?.['uuid']]?.form?.type === 'Custom' && 
+                                                                                              
+                                                                                              typeof modalProps?.[obj_detail?.['uuid']]?.form?.['form_custom'] !== 'undefined' &&
+                                                                                              modalProps?.[obj_detail?.['uuid']]?.form?.['form_custom'] !== null &&
                                                                                               (
-                                                                                                  modalProps?.[obj_detail?.['uuid']]?.form_custom 
+                                                                                                  modalProps?.[obj_detail?.['uuid']]?.form?.['form_custom'] 
                                                                                               )
                                                                                           )
                                                                                           
