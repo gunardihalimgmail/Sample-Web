@@ -792,11 +792,85 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                     {
                                       // * update data ke setRowListTable (sudah dependent)
                                         rowList.splice(findIndex, 1, {...obj_new_row});
-                                        console.error('Tes')
-                                        console.log(rowList)
 
-                                        // * Task : Update ke refDataChange & refDataEditChange
-                                        // ..........
+                                        // * Update ke refDataChange
+                                        const detail_save_key_name = detailTableSelectedRef.current?.config_obj_detail?.['save']?.['key_name'];  
+
+                                        const refDataChange_temp = contextDataOperation?.refDataChange;
+                                        if (typeof refDataChange_temp === 'object' 
+                                            && Object.keys(refDataChange_temp).length > 0)
+                                        {
+                                            // object baru untuk refDataChange
+                                            let obj_new_row_dataChange = {};
+
+                                            // * set UUID row ke obj_new_row
+                                            obj_new_row_dataChange = {...obj_new_row_dataChange, [name_uuid_row]: modal_id_row};
+
+                                            // * set ID row ke obj_new_row
+                                            if (typeof itemIDExist !== 'undefined' && itemIDExist !== null)
+                                            {
+                                                obj_new_row_dataChange = {...obj_new_row_dataChange, [name_id_edit_row]: itemIDExist}
+                                            }
+
+                                            // * Gabungkan dengan data refDataChange dari context
+                                            obj_new_row_dataChange = {
+                                                ...obj_new_row_dataChange,
+                                                ...refDataChange_temp
+                                            }
+
+                                            if (Object.keys(refDataChange.current).length > 0)
+                                            {
+                                                const refDataChangeArrTemp = refDataChange.current?.[detail_save_key_name];
+                                                
+                                                if (typeof refDataChangeArrTemp !== 'undefined' && Array.isArray(refDataChangeArrTemp))
+                                                {
+                                                  const findItemIn_RefDataChange = refDataChangeArrTemp.find((obj, idx)=>obj?.[name_uuid_row] === modal_id_row);
+                                                  if (findItemIn_RefDataChange)
+                                                  {
+                                                    const findIndexDataChange = refDataChangeArrTemp.indexOf(findItemIn_RefDataChange);
+                                                    if (findIndexDataChange !== -1)
+                                                    {
+                                                        refDataChangeArrTemp.splice(findIndexDataChange, 1, {...obj_new_row_dataChange});
+
+                                                    }
+                                                  }
+                                                }
+                                            }
+                                            
+                                        }
+                                        // * --- // Update ke refDataChange
+
+                                        // * Update ke refDataEditChange
+                                        const detail_edit_key_name = detailTableSelectedRef.current?.config_obj_detail?.['edit']?.['key_name'];  
+
+                                        const refDataEditChange_temp = contextDataOperation?.refDataEditChange;
+                                        if (typeof refDataEditChange_temp === 'object' 
+                                            && Object.keys(refDataEditChange_temp).length > 0)
+                                        {
+                                            if (Object.keys(refDataEditChange.current).length > 0)
+                                            {
+                                                const refDataEditChangeArrTemp = refDataEditChange.current?.[detail_edit_key_name];
+                                                if (typeof refDataEditChangeArrTemp !== 'undefined' && Array.isArray(refDataEditChangeArrTemp))
+                                                {
+                                                  const findItemIn_RefDataChange = refDataEditChangeArrTemp.find((obj, idx)=>obj?.[name_uuid_row] === modal_id_row);
+                                                  if (findItemIn_RefDataChange)
+                                                  {
+                                                    const findIndexDataChange = refDataEditChangeArrTemp.indexOf(findItemIn_RefDataChange);
+                                                    if (findIndexDataChange !== -1)
+                                                    {
+                                                        refDataEditChangeArrTemp.splice(findIndexDataChange, 1, {...obj_new_row});
+                                                    }
+                                                  }
+                                                }
+                                            }
+                                        }
+                                        // * --- // Update ke refDataEditChange
+
+                                        setTimeout(()=>{
+                                          outDataChange_StatusProses.current = 'process_out_change';
+                                  
+                                          outDataChange({data:{...refDataChange.current}, data_with_key_edit: {...refDataEditChange.current}, posisi_name_input_when_onchange:null, status_proses:'process_out_change'}, formDataRef.current);
+                                        },200)
 
 
                                         // * Close Modal
@@ -811,9 +885,6 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                         toastProsesRef?.current.show({severity:'success', summary: 'Success', detail:`Data Berhasil di Simpan !`, life:2000});
                                     }
                                     
-
-                                    // alert(itemIDExist)
-                                    // alert(name_id_edit_row)
                                     // alert(JSON.stringify(obj_new_row, null, 2))
                                 }
                             }
@@ -822,8 +893,6 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                         }
                     }
 
-
-                  // const findItem = rowList.find((obj, idx)=>obj?.[modal_id_row] === )
               }
           
           }
