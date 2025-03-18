@@ -1453,11 +1453,16 @@ const TransaksiPenjualanForm = () => {
                                                 actions:[
                                                   // {type:'custom_element_in_modal', style:{backgroundColorHover:'#abeef0'}, icon:<IconField className='pi pi-file-edit' style={{color:'#4389ff'}} />}
                                                   // ,{type:'custom_element_in_modal', style:{backgroundColorHover:'#ffd7d7'}, icon:<IconField className='pi pi-trash' style={{color:'#FF0000'}} />}
-                                                  {type:'custom_element_in_modal', name:'Edit', tipe_form:'Custom', style:{backgroundColorHover:'white'}, icon:<IconField className='pi pi-file-edit' style={{color:'#4389ff'}} />
+                                                  {type:'custom_element_in_modal', name:'Edit', tipe_form:'Custom', style:{backgroundColorHover:'white'}
+                                                    , icon:<IconField className='pi pi-file-edit' style={{color:'#4389ff'}} />
+                                                    , icon_disabled:<IconField className='pi pi-file-edit' style={{color:'lightgrey'}} />
                                                     , modal:{enabled:true, header:{text:'Edit Item', backgroundColor:'cadetblue'}}
                                                   }
-
-                                                  ,{type:'custom_element_in_modal', name:'Delete', tipe_form:'Custom', style:{backgroundColorHover:'white'}, icon:<IconField className='pi pi-trash' style={{color:'#FF0000'}} />}
+                                                  ,
+                                                  {type:'custom_element_in_modal', name:'Delete', tipe_form:'Custom', style:{backgroundColorHover:'white'}
+                                                    , icon:<IconField className='pi pi-trash' style={{color:'#FF0000'}} />
+                                                    , icon_disabled:<IconField className='pi pi-trash' style={{color:'lightgrey'}} />
+                                                  }
                                                 ]
                                               }
                                             },

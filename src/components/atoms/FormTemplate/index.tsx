@@ -422,7 +422,9 @@ type FormTemplate_DetailTable_CustomCell = {
 |{
   type:'actions'; // edit, custom actions, dst...
   size?:number;  // ukuran width kolom
-  actions:Array<|{type:'custom_element_in_modal'; name:string; tipe_form:'Custom'|'Template'; style?:{backgroundColorHover?:string}; icon:React.ReactElement
+  actions:Array<|{type:'custom_element_in_modal'; name:string; tipe_form:'Custom'|'Template'; style?:{backgroundColorHover?:string}
+                  ; icon:React.ReactElement
+                  ; icon_disabled:React.ReactElement
                   ; modal?:{
                       enabled:boolean;
                       header?:{
@@ -1605,7 +1607,8 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                             && typeof uuid_row !== 'undefined' && uuid_row !== null)
                                         {
                                             detailTableSelectedRef.current = {
-                                                id_detail: uuid_detail, id_row: uuid_row
+                                                id_detail: uuid_detail
+                                                , id_row: uuid_row
                                                 , config_obj_detail: {...config_obj_detail}
                                             }
                                         }
@@ -1632,8 +1635,12 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                     return (
                                                       <div key={`fit-actions-${obj_detail?.name}-${index}`}
                                                         onClick={()=>{
-                                                                    // * item -> configurasi action yang di klik
-                                                                    click_Actions(item_name, item_tipe_form, item, obj_detail, cell, column, row, table)
+                                                                  return Object.values(objDisabledForProses).every(temp=>temp) ?
+                                                                            // * Jika terdisabled, maka tidak bisa di klik
+                                                                            false
+                                                                          :
+                                                                            // * item -> configurasi action yang di klik
+                                                                            click_Actions(item_name, item_tipe_form, item, obj_detail, cell, column, row, table)
                                                                   }}
                                                       >
                                                         <style>
@@ -1646,7 +1653,8 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                   cursor:pointer;
                                                                   border-radius:50%;
 
-                                                                  &:hover {
+
+                                                                  &:not(.fit-act-cust-ele-disabled):hover {
                                                                     background-color:${item?.style?.backgroundColorHover ?? 'transparent'};
                                                                     padding:5px;
                                                                   }
@@ -1654,8 +1662,21 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                           `
                                                         }
                                                         </style>
-                                                        <Tooltip target={`.fit-act-cust-ele-${uuid_style}`} position='top' mouseTrack content={`${item_name}`} />
-                                                        <span className={`fit-act-cust-ele-${uuid_style}`}>{item?.icon}</span>
+                                                        {
+                                                            // * jika disabled, pakai icon yang icon_disabled
+                                                            Object.values(objDisabledForProses).every(temp=>temp) && (
+                                                                  <span className={`fit-act-cust-ele-${uuid_style} fit-act-cust-ele-disabled`}>{item?.icon_disabled}</span>
+                                                            )
+                                                        }
+                                                        {
+                                                            // * jika tidak disabled, pakai icon yang aktif
+                                                            !Object.values(objDisabledForProses).every(temp=>temp) && (
+                                                                <>
+                                                                  <Tooltip target={`.fit-act-cust-ele-${uuid_style}`} position='top' mouseTrack content={`${item_name}`} />
+                                                                  <span className={`fit-act-cust-ele-${uuid_style}`}>{item?.icon}</span>
+                                                                </>
+                                                            )
+                                                        }
                                                       </div>
                                                     )
                                                   }
@@ -2174,7 +2195,7 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
       
       return null;
     }
-  ,[props, propertyConfig])
+  ,[props, propertyConfig, objDisabledForProses])
 
   useEffect(()=>{
 
@@ -7971,7 +7992,13 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                                                 // renderDayContents={(day, date)=><div>{day}</div>}
                                                                                                                                 onBlur={()=>funcBlurInput(obj_input?.['index'], obj_input)}
                                                                                                                                 showMonthDropdown
+                                                                                                                                
+                                                                                                                                // * Year Dropdown
                                                                                                                                 showYearDropdown
+                                                                                                                                // yearDropdownItemNumber={15}
+                                                                                                                                // scrollableYearDropdown
+                                                                                                                                // dropdownMode='scroll'
+
                                                                                                                                 showMonthYearPicker={obj_input?.['show']?.['month_year_picker'] ?? false}
                                                                                                                                 disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
                                                                                                                                 // showDisabledMonthNavigation

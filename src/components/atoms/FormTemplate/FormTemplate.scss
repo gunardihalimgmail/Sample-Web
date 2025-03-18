@@ -119,29 +119,120 @@
 
 // Date Picker
 .ppe-anly-datepicker-parent {
-  width: 100%;
+    width: 100%;
 
-  .react-datepicker__input-container {  
-    display: flex;
-    height:100%;
+    .react-datepicker__input-container {  
+      display: flex;
+      height:100%;
 
-    .react-datepicker-ignore-onclickoutside {
-      width: 100%;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      &:disabled {
-        background-color: #e9ecef;
+      .react-datepicker-ignore-onclickoutside {
+        width: 100%;
       }
-    }
-  }
 
-  @media (max-width:767px) {
       input[type="text"] {
-        width: 100% !important;
+        width: 100%;
+        &:disabled {
+          background-color: #e9ecef;
+        }
       }
-  }
+    }
+
+
+
+    // * Show Animation Scale Popup DatePicker
+    .react-datepicker__tab-loop {
+        
+        z-index: 9;
+
+        .react-datepicker-popper {
+          div {
+              transform-origin: top;
+              animation: show-date-picker .2s ease-in forwards; 
+
+              .react-datepicker {
+
+                // * Arrow Previous dan Next
+                .react-datepicker__navigation {
+                  top:7px;
+                }
+
+                // * Segitiga Panah
+                .react-datepicker__triangle {
+                  transform: translate3d(192.8px, 0px, 0px) !important;
+                }
+
+                // * Selevel dengan bagian container 'Today' di bawah
+                  .react-datepicker__month-container {
+                      z-index: 1;
+
+                      .react-datepicker__header  {
+                        z-index: 4 !important;  
+                      }
+
+                      .react-datepicker__header__dropdown {
+                          position: relative;
+                          z-index: 4 !important;
+
+                        .react-datepicker__month-dropdown-container {
+                            .react-datepicker__month-dropdown {
+
+                                width: max-content;
+                                padding-inline: 15px;
+                                // .react-datepicker__month-option {
+                                    // left:12% !important;
+                                // }
+
+
+                                .react-datepicker__month-option--selected {
+                                  left:-10px;
+                                }
+
+                            }
+
+                            .react-datepicker__month-read-view {
+                              visibility: visible !important;
+                            }
+                        }
+
+                        .react-datepicker__year-dropdown-container {
+                          .react-datepicker__year-dropdown {
+                              width: 87px;
+                              // left:50% !important;
+                          }
+                          
+                          .react-datepicker__year-read-view {
+                              visibility: visible !important;
+                          }
+                        }
+                      }
+
+                  }
+
+                  .react-datepicker__today-button {
+                    z-index: -1 !important;
+                    position: relative;
+                  }
+              }
+
+
+          }
+      }
+    }
+
+    @keyframes show-date-picker {
+      from{
+        transform: scaleY(0);
+      } 
+      to{
+        transform: scaleY(1);
+      }
+    }
+
+    @media (max-width:767px) {
+        input[type="text"] {
+          width: 100% !important;
+        }
+    }
 }
 
 
