@@ -121,6 +121,11 @@
 .ppe-anly-datepicker-parent {
     width: 100%;
 
+    // element div pertama dalam 'ppe-anly-datepicker-parent' (untuk width input element 100%)
+    > :first-child{
+      width: 100%;
+    }
+
     .react-datepicker__input-container {  
       display: flex;
       height:100%;

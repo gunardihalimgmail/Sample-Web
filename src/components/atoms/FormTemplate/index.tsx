@@ -7998,9 +7998,10 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                                                 // yearDropdownItemNumber={15}
                                                                                                                                 // scrollableYearDropdown
                                                                                                                                 // dropdownMode='scroll'
-
+                                                                                                                              
                                                                                                                                 showMonthYearPicker={obj_input?.['show']?.['month_year_picker'] ?? false}
                                                                                                                                 disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
+                                                                                                                                withPortal={statusWindowMobile} // jika posisi mobile baru di tampilkan popup portal
                                                                                                                                 // showDisabledMonthNavigation
                                                                                                                           />
 
