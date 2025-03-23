@@ -4350,6 +4350,19 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                 }
               });
 
+              if (obj_input?.type === 'multi-select')
+              {
+                  const select_item_type = obj_input?.select_item_type;
+                  // * Jika tipe nya single item, maka langsung hide setelah memilih item
+                  if (select_item_type === 'single')
+                  {
+                    if (typeof inputRefs?.[obj_input?.['index']]?.current?.hide())
+                    {
+                      inputRefs?.[obj_input?.['index']].current.hide();
+                    }
+                  }
+              }
+              
               outDataChange_StatusProses.current = 'process_out_change';
 
               outDataChange({data:{...refDataChange.current},
@@ -8122,6 +8135,13 @@ const FormTemplate:React.FC<ParamLocal> = ({children, props, style, final_sessio
                                                                                                                                   options={objDataMultiSelect?.[obj_input?.['index']]}
                                                                                                                                   value={objSelected_MultiSelect?.[obj_input?.['index']] || []}
                                                                                                                                   onChange={(event)=>changeControl(obj_input?.['index'], obj_input?.['save']?.['key_name'], obj_input, event)}
+                                                                                                                                  onKeyDown={(event)=>{
+                                                                                                                                    if (event.key === 'Escape'){
+                                                                                                                                      if (inputRefs?.[obj_input?.['index']]?.current?.hide()){
+                                                                                                                                        inputRefs[obj_input?.['index']].current.hide();
+                                                                                                                                      }
+                                                                                                                                    }
+                                                                                                                                  }}
                                                                                                                                   optionLabel='name'  // yang tampil di item 'id' atau 'name'
                                                                                                                                   disabled={objDisabled?.[obj_input?.['index']] || objDisabledForProses?.[obj_input?.['index']]}
                                                                                                                                   filter
