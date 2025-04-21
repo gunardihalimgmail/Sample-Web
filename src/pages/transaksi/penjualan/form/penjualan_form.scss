@@ -20,3 +20,8 @@
   color: red;
   font-size: 15px;  
 }
+
+.page-break {
+  page-break-before: always;
+  break-before: page;
+}

@@ -25,6 +25,7 @@ import MagnifyCustom from '../../../../components/atoms/MagnifyCustom';
 import { Form } from 'react-bootstrap';
 import { Toast } from 'primereact/toast';
 
+import html2pdf from 'html2pdf.js';
 
 // const ButtonProviderClick = ({param}) => {
 //   const {dataContext, setDataContext} = useContext<FormTemplateContextInterface>(FormTemplateContext);
@@ -1929,10 +1930,79 @@ const TransaksiPenjualanForm = () => {
       }
   }
 
+  const options_jspdf = {
+    filename: 'my-document.pdf',
+    margin:[10,10,20,10],
+    image:{
+            // type:'jpeg'
+            type:'jpeg'
+            , quality:0.98},
+    html2canvas: {scale:3  // scale : tingkatkan kualitas tulisan agar tidak pecah
+                , useCors: true // kalau pakai gambar eksternal
+                }
+    ,jsPDF:{
+      unit:'mm',
+      format:[210, 140],
+      orientation:'landscape' // portrait or landscape
+    },
+    // pagebreak:{mode:['avoid-all', 'css', 'legacy']}  // strict
+    pagebreak:{
+      mode:['css', 'legacy']
+      // ,before:'.page-break'  // Bisa pakai class untuk kontrol manual
+    }
+  }
+
+  const elementRefFaktur = useRef<any>(null);
+  const handleConvertToPdf = () => {
+    html2pdf()
+      .from(elementRefFaktur.current)
+      .set(options_jspdf)
+      .toPdf()
+      .get('pdf')
+      .then((pdf)=>{
+        const totalPages = pdf.internal.getNumberOfPages();
+
+        const lastPage = totalPages;
+        const pageContent = pdf.internal.pages[4];
+        // pdf.deletePage(lastPage);
+        // alert(pageContent)
+        // alert(pageContent.join('').trim() === '')
+
+        for (let i=1;i<=totalPages;i++){
+          pdf.setPage(i);
+          pdf.setFontSize(8);
+          pdf.setTextColor(100);
+          pdf.text(
+            pdf.internal.pageSize.width - 50,
+            pdf.internal.pageSize.height - 10,
+            `Page ${i} of ${totalPages}`
+          )
+        }
+        pdf.save('dokumentku.pdf');
+
+      })
+  }
+
   return (
     // <FormTemplateContextProv>
 
     <div>
+
+      <div>
+          <ButtonPrime 
+              onClick={handleConvertToPdf}
+              color='primary' severity='success' label='Print' icon={'pi pi-print'} rounded outlined/>
+      </div>
+      <div ref={elementRefFaktur} className='mb-2' 
+            // style={{paddingBottom:'40px'}}
+          style={{overflowWrap:'break-word', wordBreak:'break-word'}}
+        >
+        <h1>My Document</h1>
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quia vel ipsa earum quos optio at ducimus, dolorum facere eius quod ad nihil dolores minus, tempora inventore molestias deleniti incidunt laborum in! Itaque placeat, eveniet ipsam sunt facilis praesentium non nisi porro quia iste, magni odio quam dicta quos voluptatum veniam eaque qui? Provident magnam obcaecati, alias libero ducimus dolorum molestias accusantium saepe pariatur ullam, harum maiores animi, adipisci numquam. Minus doloribus pariatur distinctio ex ducimus! Soluta voluptatem exercitationem ea unde ad fugit distinctio delectus repellendus, ratione magnam esse odio, nostrum quasi autem suscipit dolore voluptatum. Sint quisquam numquam quidem quibusdam.</p>
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quia vel ipsa earum quos optio at ducimus, dolorum facere eius quod ad nihil dolores minus, tempora inventore molestias deleniti incidunt laborum in! Itaque placeat, eveniet ipsam sunt facilis praesentium non nisi porro quia iste, magni odio quam dicta quos voluptatum veniam eaque qui? Provident magnam obcaecati, alias libero ducimus dolorum molestias accusantium saepe pariatur ullam, harum maiores animi, adipisci numquam. Minus doloribus pariatur distinctio ex ducimus! Soluta voluptatem exercitationem ea unde ad fugit distinctio delectus repellendus, ratione magnam esse odio, nostrum quasi autem suscipit dolore voluptatum. Sint quisquam numquam quidem quibusdam.            
+        </p>
+        <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quia vel ipsa earum quos optio at ducimus, dolorum facere eius quod ad nihil dolores minus, tempora inventore molestias deleniti incidunt laborum in! Itaque placeat, eveniet ipsam sunt facilis praesentium non nisi porro quia iste, magni odio quam dicta quos voluptatum veniam eaque qui? Provident magnam obcaecati, alias libero ducimus dolorum molestias accusantium saepe pariatur ullam, harum maiores animi, adipisci numquam. Minus doloribus pariatur distinctio ex ducimus! Soluta voluptatem exercitationem ea unde ad fugit distinctio delectus repellendus, ratione magnam esse odio, nostrum quasi autem suscipit dolore voluptatum. Sint quisquam numquam quidem quibusdam.</p>
+      </div>
 
       {/* Magnify Custom */}
       {/* <div style={{width:'300px', height:'300px'}} className='mb-2'>
