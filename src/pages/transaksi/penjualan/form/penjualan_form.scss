@@ -21,6 +21,23 @@
   font-size: 15px;  
 }
 
+.only-print {
+  // visibility: hidden;
+  display: none;
+  // height:0;
+  // position: absolute;
+  // pointer-events: none;
+}
+
+// @media print {
+//   .only-print {
+//     visibility: visible !important;
+//     height:auto !important;
+//     position: static !important;
+//     pointer-events: auto !important;
+//   }
+// }
+
 .page-break {
   page-break-before: always;
   break-before: page;

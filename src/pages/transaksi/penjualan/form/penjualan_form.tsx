@@ -1954,6 +1954,14 @@ const TransaksiPenjualanForm = () => {
 
   const elementRefFaktur = useRef<any>(null);
   const handleConvertToPdf = () => {
+
+     // 1. Tampilkan elemen khusus PDF
+    const forPdfElements = document.querySelectorAll('.only-print');
+    forPdfElements.forEach(el => {
+      const ele = el as HTMLElement;
+      ele.style.display = 'block';
+    });
+
     html2pdf()
       .from(elementRefFaktur.current)
       .set(options_jspdf)
@@ -1980,6 +1988,13 @@ const TransaksiPenjualanForm = () => {
         }
         pdf.save('dokumentku.pdf');
 
+          // 1. Hide elemen khusus PDF
+          const forPdfElements = document.querySelectorAll('.only-print');
+          forPdfElements.forEach(el => {
+            const ele = el as HTMLElement;
+            ele.style.display = 'none';
+          });
+
       })
   }
 
@@ -1988,12 +2003,13 @@ const TransaksiPenjualanForm = () => {
 
     <div>
 
-      <div>
+      <div className='mb-2'>
           <ButtonPrime 
               onClick={handleConvertToPdf}
               color='primary' severity='success' label='Print' icon={'pi pi-print'} rounded outlined/>
       </div>
-      <div ref={elementRefFaktur} className='mb-2' 
+      <div ref={elementRefFaktur} 
+            className='only-print' 
             // style={{paddingBottom:'40px'}}
           style={{overflowWrap:'break-word', wordBreak:'break-word'}}
         >
